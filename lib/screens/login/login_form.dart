@@ -1,0 +1,168 @@
+// ignore_for_file: unused_field, must_be_immutable, use_build_context_synchronously
+
+import 'package:flutter/material.dart';
+import 'package:office_syndrome_v2/app_router.dart';
+import 'package:office_syndrome_v2/components/custom_textfield.dart';
+import 'package:office_syndrome_v2/components/rounded_button.dart';
+import 'package:office_syndrome_v2/themes/colors.dart';
+
+class LoginForm extends StatelessWidget {
+  LoginForm({Key? key}) : super(key: key);
+
+  // สร้าง GlobalKey สำหรับ Form นี้
+  final _formKeyLogin = GlobalKey<FormState>();
+
+  // สร้าง TextEditingController
+  // final _emailController = TextEditingController();
+  // final _passwordController = TextEditingController();
+  final _emailController = TextEditingController(text: 'dddd@gmail.com');
+  final _passwordController = TextEditingController(text: '123456');
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.all(20.0),
+      child: Column(
+        children: [
+          const Text(
+            "เข้าสู่ระบบ",
+            style: TextStyle(
+              fontSize: 30,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+          const SizedBox(
+            height: 30,
+          ),
+          Form(
+              key: _formKeyLogin,
+              child: Column(
+                children: [
+                  customTextField(
+                    controller: _emailController,
+                    hintText: "Email",
+                    prefixIcon: const Icon(Icons.email),
+                    obscureText: false,
+                    textInputType: TextInputType.emailAddress,
+                    validator: (value) {
+                      if (value == null || value.isEmpty) {
+                        return "กรุณากรอกอีเมล";
+                      } else if (!value.contains("@")) {
+                        return "กรุณากรอกอีเมลให้ถูกต้อง";
+                      }
+                      return null;
+                    },
+                  ),
+                  const SizedBox(
+                    height: 10,
+                  ),
+                  customTextField(
+                    controller: _passwordController,
+                    hintText: "Password",
+                    prefixIcon: const Icon(Icons.lock),
+                    obscureText: true,
+                    validator: (value) {
+                      if (value == null || value.isEmpty) {
+                        return "กรุณากรอกรหัสผ่าน";
+                      } else if (value.length < 6) {
+                        return "กรุณากรอกรหัสผ่านอย่างน้อย 6 ตัวอักษร";
+                      }
+                      return null;
+                    },
+                  ),
+                  const SizedBox(
+                    height: 10,
+                  ),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.end,
+                    children: [
+                      InkWell(
+                        onTap: () {
+                          //Open Forgot password screen here
+                          // Navigator.pushNamed(context, AppRouter.forgotPassword);
+                        },
+                        child: const Text("ลืมรหัสผ่าน ?"),
+                      )
+                    ],
+                  ),
+                  const SizedBox(
+                    height: 10,
+                  ),
+                  RoundedButton(
+                      label: "LOGIN",
+                      onPressed: () {
+                        Navigator.pushReplacementNamed(
+                            context, AppRouter.dashboard);
+                      },
+                      icon: null)
+                ],
+              )),
+          const SizedBox(
+            height: 10,
+          ),
+          const SizedBox(
+            height: 30,
+          ),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              const Text("ยังไม่มีบัญชีกับเรา ? "),
+              InkWell(
+                onTap: () {
+                  //Open Sign up screen here
+                  // Navigator.pushReplacementNamed(context, AppRouter.register);
+                  showDialog(
+                    context: context,
+                    builder: (context) {
+                      return AlertDialog(
+                        backgroundColor: primary,
+                        shape: const RoundedRectangleBorder(
+                          borderRadius: BorderRadius.all(
+                            Radius.circular(15.0),
+                          ),
+                        ),
+                        content: Container(
+                          height: 200,
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                            children: [
+                              Text("เลือกสมัครสมาชิก"),
+                              const SizedBox(
+                                height: 20,
+                              ),
+                              RoundedButton(
+                                  label: "ผู้ป่วย",
+                                  onPressed: () {
+                                    Navigator.pushReplacementNamed(
+                                        context, AppRouter.register);
+                                  },
+                                  icon: null),
+                              const SizedBox(
+                                height: 20,
+                              ),
+                              RoundedButton(
+                                  label: "สมัครสมาชิก",
+                                  onPressed: () {},
+                                  icon: null),
+                            ],
+                          ),
+                        ),
+                      );
+                    },
+                  );
+                },
+                child: const Text(
+                  "สมัครสมาชิก",
+                  style: TextStyle(
+                    color: Colors.blue,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              )
+            ],
+          )
+        ],
+      ),
+    );
+  }
+}
