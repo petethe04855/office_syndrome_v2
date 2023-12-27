@@ -44,6 +44,11 @@ dependencies:
 
   animations: ^2.0.10
 
+  # Image Picker
+  image_picker: ^1.0.4
+
+  # Image Cropper
+  image_cropper: ^5.0.0
 
 
 
