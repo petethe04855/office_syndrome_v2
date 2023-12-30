@@ -46,6 +46,9 @@ class _RegisterImageState extends State<RegisterImage> {
               child: _imageFile == null ? Icon(Icons.person) : null,
             ),
           ),
+          SizedBox(
+            height: 10,
+          ),
         ],
       ),
     );

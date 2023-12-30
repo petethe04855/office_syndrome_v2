@@ -4,19 +4,37 @@ import 'package:flutter/material.dart';
 import 'package:office_syndrome_v2/app_router.dart';
 import 'package:office_syndrome_v2/components/custom_textfield.dart';
 import 'package:office_syndrome_v2/components/rounded_button.dart';
-import 'package:office_syndrome_v2/themes/colors.dart';
+import 'package:office_syndrome_v2/services/firbase_auth_services.dart';
 
-class LoginForm extends StatelessWidget {
+class LoginForm extends StatefulWidget {
   LoginForm({Key? key}) : super(key: key);
+
+  @override
+  State<LoginForm> createState() => _LoginFormState();
+}
+
+class _LoginFormState extends State<LoginForm> {
+  final FirebaseAuthService _auth = FirebaseAuthService();
 
   // สร้าง GlobalKey สำหรับ Form นี้
   final _formKeyLogin = GlobalKey<FormState>();
 
   // สร้าง TextEditingController
-  // final _emailController = TextEditingController();
-  // final _passwordController = TextEditingController();
   final _emailController = TextEditingController(text: 'dddd@gmail.com');
   final _passwordController = TextEditingController(text: '123456');
+
+  @override
+  void dispose() {
+    // TODO: implement dispose
+    _emailController.dispose();
+    _passwordController.dispose();
+    super.dispose();
+  }
+
+  void _signIn() async {
+    String email = _emailController.text;
+    String password = _passwordController.text;
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -91,8 +109,8 @@ class LoginForm extends StatelessWidget {
                   RoundedButton(
                       label: "LOGIN",
                       onPressed: () {
-                        Navigator.pushReplacementNamed(
-                            context, AppRouter.dashboard);
+                        // Navigator.pushReplacementNamed(
+                        //     context, AppRouter.dashboard);
                       },
                       icon: null)
                 ],
@@ -110,46 +128,7 @@ class LoginForm extends StatelessWidget {
               InkWell(
                 onTap: () {
                   //Open Sign up screen here
-                  // Navigator.pushReplacementNamed(context, AppRouter.register);
-                  showDialog(
-                    context: context,
-                    builder: (context) {
-                      return AlertDialog(
-                        backgroundColor: primary,
-                        shape: const RoundedRectangleBorder(
-                          borderRadius: BorderRadius.all(
-                            Radius.circular(15.0),
-                          ),
-                        ),
-                        content: Container(
-                          height: 200,
-                          child: Column(
-                            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                            children: [
-                              Text("เลือกสมัครสมาชิก"),
-                              const SizedBox(
-                                height: 20,
-                              ),
-                              RoundedButton(
-                                  label: "ผู้ป่วย",
-                                  onPressed: () {
-                                    Navigator.pushReplacementNamed(
-                                        context, AppRouter.register);
-                                  },
-                                  icon: null),
-                              const SizedBox(
-                                height: 20,
-                              ),
-                              RoundedButton(
-                                  label: "สมัครสมาชิก",
-                                  onPressed: () {},
-                                  icon: null),
-                            ],
-                          ),
-                        ),
-                      );
-                    },
-                  );
+                  Navigator.pushReplacementNamed(context, AppRouter.register);
                 },
                 child: const Text(
                   "สมัครสมาชิก",

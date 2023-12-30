@@ -1,13 +1,10 @@
 // ignore_for_file: prefer_const_constructors
 
 import 'dart:io';
-
 import 'package:flutter/material.dart';
 import 'package:office_syndrome_v2/components/custom_textfield.dart';
 import 'package:office_syndrome_v2/components/rounded_button.dart';
-import 'package:office_syndrome_v2/providers/location_provider%20.dart';
 import 'package:office_syndrome_v2/screens/register/components/register_image.dart';
-import 'package:provider/provider.dart';
 
 class RegisterForm extends StatefulWidget {
   RegisterForm({super.key});
@@ -36,6 +33,8 @@ class _RegisterFormState extends State<RegisterForm> {
 
   String? _imageName;
 
+  List<String> _position = ['ผู้ป่วย', 'หมอ'];
+
   @override
   Widget build(BuildContext context) {
     return Padding(
@@ -45,9 +44,6 @@ class _RegisterFormState extends State<RegisterForm> {
           const Text(
             "ลงทะเบียน",
             style: TextStyle(fontSize: 30, fontWeight: FontWeight.bold),
-          ),
-          const SizedBox(
-            height: 30,
           ),
           SingleChildScrollView(
             child: Form(
@@ -147,7 +143,10 @@ class _RegisterFormState extends State<RegisterForm> {
                       return null;
                     },
                   ),
-
+                  const SizedBox(
+                    height: 10,
+                  ),
+                  customDropdown(),
                   const SizedBox(
                     height: 10,
                   ),
@@ -172,54 +171,78 @@ class _RegisterFormState extends State<RegisterForm> {
     );
   }
 
-  Widget _provincesDropdown() {
-    return Consumer<LocationProvider>(
-      builder: (context, locationProvider, child) {
-        return Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            DropdownButtonFormField<String>(
-              value: locationProvider.selectedProvince,
-              hint: Text('เลือกจังหวัด'),
-              onChanged: (value) {
-                locationProvider.setselectedProvince(value!);
-              },
-              decoration: const InputDecoration(
-                labelText: 'จังหวัด',
-                border: OutlineInputBorder(),
-              ),
-              items: locationProvider.province.map((String province) {
-                return DropdownMenuItem<String>(
-                  value: province,
-                  child: Text(province),
-                );
-              }).toList(),
-            ),
-            SizedBox(height: 20),
-            Text('เลือกเขต:'),
-            DropdownButtonFormField<String>(
-              value: locationProvider.selectedDistrict,
-              hint: Text('เลือกอำเภอ'),
-              onChanged: (newValue) {
-                locationProvider.setselectedDistrict(newValue!);
-              },
-              decoration: const InputDecoration(
-                labelText: 'อำเภอ',
-                border: OutlineInputBorder(),
-              ),
-              items: locationProvider.selectedProvince != null
-                  ? locationProvider.city[locationProvider.selectedProvince]
-                      ?.map((String district) {
-                      return DropdownMenuItem<String>(
-                        value: district,
-                        child: Text(district),
-                      );
-                    }).toList()
-                  : null,
-            ),
-          ],
-        );
+  Widget customDropdown() {
+    return DropdownButtonFormField<String>(
+      hint: Text(_position.first),
+      onChanged: (value) {
+        setState(() {
+          print(value);
+        });
       },
+      decoration: InputDecoration(
+        border: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(40),
+        ),
+        focusedBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(40),
+        ),
+        hintStyle: const TextStyle(color: Colors.grey),
+        filled: true,
+        isDense: true,
+      ),
+      items: _position.map((String province) {
+        return DropdownMenuItem<String>(
+          value: province,
+          child: Text(province),
+        );
+      }).toList(),
     );
   }
+
+  // Widget _provincesDropdown() {
+  //   return Consumer<LocationProvider>(
+  //     builder: (context, locationProvider, child) {
+  //       return Column(
+  //         mainAxisAlignment: MainAxisAlignment.center,
+  //         children: [
+  //           DropdownButtonFormField<String>(
+  //             value: locationProvider.selectedProvince,
+  //             hint: Text('เลือกจังหวัด'),
+  //             onChanged: (value) {
+  //               locationProvider.setselectedProvince(value!);
+  //             },
+  //             items: locationProvider.province.map((String province) {
+  //               return DropdownMenuItem<String>(
+  //                 value: province,
+  //                 child: Text(province),
+  //               );
+  //             }).toList(),
+  //           ),
+  //           SizedBox(height: 20),
+  // Text('เลือกเขต:'),
+  // DropdownButtonFormField<String>(
+  //   value: locationProvider.selectedDistrict,
+  //   hint: Text('เลือกอำเภอ'),
+  //   onChanged: (newValue) {
+  //     locationProvider.setselectedDistrict(newValue!);
+  //   },
+  //   decoration: const InputDecoration(
+  //     labelText: 'อำเภอ',
+  //     border: OutlineInputBorder(),
+  //   ),
+  //   items: locationProvider.selectedProvince != null
+  //       ? locationProvider.city[locationProvider.selectedProvince]
+  //           ?.map((String district) {
+  //           return DropdownMenuItem<String>(
+  //             value: district,
+  //             child: Text(district),
+  //           );
+  //         }).toList()
+  //       : null,
+  // ),
+  //     ],
+  //   );
+  // },
+  // );
+  // }
 }

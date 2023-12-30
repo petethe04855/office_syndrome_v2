@@ -49,6 +49,18 @@ dependencies:
 
   # Image Cropper
   image_cropper: ^5.0.0
+  # cloud firestore
+  cloud_firestore: ^4.13.6
+  
+  logger: ^2.0.2+1
+
+  connectivity_plus: ^5.0.2
+
+  # shared preferences
+  shared_preferences: ^2.2.0
+
+  # dio
+  dio: ^5.3.0
 
 
 
