@@ -1,5 +1,6 @@
 // ignore_for_file: unused_field, must_be_immutable, use_build_context_synchronously
 
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:office_syndrome_v2/app_router.dart';
 import 'package:office_syndrome_v2/components/custom_textfield.dart';
@@ -34,7 +35,34 @@ class _LoginFormState extends State<LoginForm> {
   void _signIn() async {
     String email = _emailController.text;
     String password = _passwordController.text;
+
+    User? user = await _auth.sigInWithEmailAndPassWord(email, password);
+
+    if (user != null) {
+      print("User is successfully logged in");
+      Navigator.pushNamed(context, AppRouter.dashboard);
+    } else {
+      print("Some error occurred");
+    }
   }
+
+  // void _signIn() async {
+  //   try {
+  //     UserCredential userCredential = await _auth.signInWithEmailAndPassword(
+  //       email: _emailController.text,
+  //       password: _passwordController.text,
+  //     );
+
+  //     if (userCredential.user != null) {
+  //       print("User is successfully logged in");
+  //       Navigator.pushNamed(context, AppRouter.dashboard);
+  //     } else {
+  //       print("Some error occurred");
+  //     }
+  //   } catch (e) {
+  //     print(e);
+  //   }
+  // }
 
   @override
   Widget build(BuildContext context) {
@@ -111,6 +139,9 @@ class _LoginFormState extends State<LoginForm> {
                       onPressed: () {
                         // Navigator.pushReplacementNamed(
                         //     context, AppRouter.dashboard);
+                        if (_formKeyLogin.currentState!.validate()) {
+                          _signIn();
+                        }
                       },
                       icon: null)
                 ],

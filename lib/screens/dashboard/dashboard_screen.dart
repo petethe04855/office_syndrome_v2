@@ -1,6 +1,8 @@
 // ignore_for_file: prefer_const_literals_to_create_immutables, prefer_const_constructors
 
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:office_syndrome_v2/app_router.dart';
 import 'package:office_syndrome_v2/screens/bottomnavpage/home_screen.dart';
 import 'package:office_syndrome_v2/screens/bottomnavpage/profile_screen.dart';
 import 'package:office_syndrome_v2/themes/colors.dart';
@@ -43,6 +45,11 @@ class _DashboardScreenState extends State<DashboardScreen> {
     });
   }
 
+  void sigOut() {
+    FirebaseAuth.instance.signOut();
+    Navigator.pushReplacementNamed(context, AppRouter.login);
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -69,6 +76,17 @@ class _DashboardScreenState extends State<DashboardScreen> {
                   title: Text(
                     'Counter (With Stateful)',
                   ),
+                ),
+                ListTile(
+                  leading: Icon(
+                    Icons.timer_outlined,
+                  ),
+                  title: Text(
+                    'Out',
+                  ),
+                  onTap: () {
+                    sigOut();
+                  },
                 ),
               ],
             ),

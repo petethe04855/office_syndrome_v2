@@ -2,9 +2,11 @@
 
 import 'dart:io';
 import 'package:flutter/material.dart';
+import 'package:office_syndrome_v2/app_router.dart';
 import 'package:office_syndrome_v2/components/custom_textfield.dart';
 import 'package:office_syndrome_v2/components/rounded_button.dart';
 import 'package:office_syndrome_v2/screens/register/components/register_image.dart';
+import 'package:office_syndrome_v2/services/firbase_auth_services.dart';
 
 class RegisterForm extends StatefulWidget {
   RegisterForm({super.key});
@@ -18,15 +20,15 @@ class _RegisterFormState extends State<RegisterForm> {
   final _formKeyRegister = GlobalKey<FormState>();
 
   // สร้าง TextEditingController
-  final _firstNameController = TextEditingController();
+  final _firstNameController = TextEditingController(text: 'dddd');
 
-  final _lastNameController = TextEditingController();
+  final _lastNameController = TextEditingController(text: 'sssss');
 
-  final _emailController = TextEditingController();
+  final _emailController = TextEditingController(text: 'dddd@gmail.com');
 
-  final _passwordController = TextEditingController();
+  final _passwordController = TextEditingController(text: '123456');
 
-  final _confirmPasswordController = TextEditingController();
+  final _confirmPasswordController = TextEditingController(text: '123456');
 
   // ไฟล์รูปภาพ
   File? _imageFile;
@@ -155,6 +157,18 @@ class _RegisterFormState extends State<RegisterForm> {
                       onPressed: () {
                         if (_formKeyRegister.currentState!.validate()) {
                           _formKeyRegister.currentState!.save();
+                          FirebaseAuthService().sigUpWithEmailAndPassWord(
+                            _emailController.text,
+                            _passwordController.text,
+                            _firstNameController.text,
+                            _lastNameController.text,
+                            _confirmPasswordController.text,
+                            _position.first,
+                            _imageFile,
+                          );
+                          // FirebaseAuthService().upLoadImage(_imageFile);
+                          Navigator.pushReplacementNamed(
+                              context, AppRouter.login);
                         }
                       },
                       icon: null),

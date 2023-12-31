@@ -5,6 +5,7 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:image_cropper/image_cropper.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:office_syndrome_v2/services/firbase_auth_services.dart';
 
 class RegisterImage extends StatefulWidget {
   final Function(File? file) callBackSetImage;
@@ -23,12 +24,6 @@ class RegisterImage extends StatefulWidget {
 class _RegisterImageState extends State<RegisterImage> {
   File? _imageFile;
   final _picker = ImagePicker();
-
-  @override
-  void dispose() {
-    _imageFile?.delete();
-    super.dispose();
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -124,11 +119,12 @@ class _RegisterImageState extends State<RegisterImage> {
       ],
       uiSettings: [
         AndroidUiSettings(
-            toolbarTitle: 'Cropper',
-            toolbarColor: Colors.deepOrange,
-            toolbarWidgetColor: Colors.white,
-            initAspectRatio: CropAspectRatioPreset.original,
-            lockAspectRatio: false),
+          toolbarTitle: 'Cropper',
+          toolbarColor: Colors.deepOrange,
+          toolbarWidgetColor: Colors.white,
+          initAspectRatio: CropAspectRatioPreset.original,
+          lockAspectRatio: false,
+        ),
         IOSUiSettings(
           title: 'Cropper',
         ),
@@ -139,7 +135,7 @@ class _RegisterImageState extends State<RegisterImage> {
       maxWidth: 500,
       maxHeight: 500,
 
-      //circleShape: true
+      // circleShape: true
     )
         .then((file) {
       if (file != null) {
