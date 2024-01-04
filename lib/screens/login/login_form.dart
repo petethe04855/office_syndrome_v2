@@ -46,24 +46,6 @@ class _LoginFormState extends State<LoginForm> {
     }
   }
 
-  // void _signIn() async {
-  //   try {
-  //     UserCredential userCredential = await _auth.signInWithEmailAndPassword(
-  //       email: _emailController.text,
-  //       password: _passwordController.text,
-  //     );
-
-  //     if (userCredential.user != null) {
-  //       print("User is successfully logged in");
-  //       Navigator.pushNamed(context, AppRouter.dashboard);
-  //     } else {
-  //       print("Some error occurred");
-  //     }
-  //   } catch (e) {
-  //     print(e);
-  //   }
-  // }
-
   @override
   Widget build(BuildContext context) {
     return Padding(

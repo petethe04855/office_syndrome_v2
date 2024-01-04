@@ -63,7 +63,6 @@ class _RegisterFormState extends State<RegisterForm> {
                       });
                     },
                   ),
-
                   const SizedBox(
                     height: 10,
                   ),
@@ -153,25 +152,26 @@ class _RegisterFormState extends State<RegisterForm> {
                     height: 10,
                   ),
                   RoundedButton(
-                      label: "Register",
-                      onPressed: () {
-                        if (_formKeyRegister.currentState!.validate()) {
-                          _formKeyRegister.currentState!.save();
-                          FirebaseAuthService().sigUpWithEmailAndPassWord(
-                            _emailController.text,
-                            _passwordController.text,
-                            _firstNameController.text,
-                            _lastNameController.text,
-                            _confirmPasswordController.text,
-                            _position.first,
-                            _imageFile,
-                          );
-                          // FirebaseAuthService().upLoadImage(_imageFile);
-                          Navigator.pushReplacementNamed(
-                              context, AppRouter.login);
-                        }
-                      },
-                      icon: null),
+                    label: "Register",
+                    onPressed: () {
+                      if (_formKeyRegister.currentState!.validate()) {
+                        _formKeyRegister.currentState!.save();
+                        FirebaseAuthService().sigUpWithEmailAndPassWord(
+                          _emailController.text,
+                          _passwordController.text,
+                          _firstNameController.text,
+                          _lastNameController.text,
+                          _confirmPasswordController.text,
+                          _position.first,
+                          _imageFile,
+                        );
+                        // FirebaseAuthService().upLoadImage(_imageFile);
+                        Navigator.pushReplacementNamed(
+                            context, AppRouter.login);
+                      }
+                    },
+                    icon: null,
+                  ),
                   // _provincesDropdown(),
                   const SizedBox(
                     height: 10,

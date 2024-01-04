@@ -2,6 +2,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:introduction_screen/introduction_screen.dart';
 import 'package:office_syndrome_v2/app_router.dart';
+import 'package:office_syndrome_v2/utils/utility.dart';
 
 class WelcomeScreen extends StatefulWidget {
   const WelcomeScreen({super.key});
@@ -14,6 +15,9 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
   final introKey = GlobalKey<IntroductionScreenState>();
 
   void _onIntroEnd(context) async {
+    // Set ค่าให้กับ SharedPreferences เพื่อบอกว่าเคยแสดง Intro แล้ว
+    Utility.setSharedPreference('welcomeStatus', true);
+
     // ไปยังหน้า Login แบบไม่มีปุ่มย้อนกลับ
     Navigator.pushReplacementNamed(context, AppRouter.login);
   }

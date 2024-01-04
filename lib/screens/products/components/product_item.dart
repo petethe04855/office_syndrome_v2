@@ -2,7 +2,6 @@
 
 import 'package:flutter/material.dart';
 import 'package:animations/animations.dart';
-import 'package:office_syndrome_v2/screens/products/components/product_form.dart';
 
 class ProductItem extends StatefulWidget {
   const ProductItem({super.key});
@@ -57,8 +56,8 @@ class _ProductItemState extends State<ProductItem> {
           closedBuilder: (context, action) {
             return _listItem();
           },
-          openBuilder: (context, index) {
-            return ProductForm();
+          openBuilder: (context, action) {
+            return Container();
           },
         );
       },
@@ -83,8 +82,8 @@ class _ProductItemState extends State<ProductItem> {
             closedBuilder: (context, action) {
               return _listItem();
             },
-            openBuilder: (context, index) {
-              return ProductForm();
+            openBuilder: (context, action) {
+              return Container();
             },
           ),
         );

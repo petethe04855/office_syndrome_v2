@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:office_syndrome_v2/app_router.dart';
 import 'package:office_syndrome_v2/providers/location_provider%20.dart';
 import 'package:office_syndrome_v2/themes/colors.dart';
+import 'package:office_syndrome_v2/utils/utility.dart';
 import 'package:provider/provider.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'firebase_options.dart';
@@ -9,11 +10,24 @@ import 'firebase_options.dart';
 // กำหนดตัวแปร initialRoute ให้กับ MaterialApp
 var initialRoute;
 
-Future main() async {
+void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
+  // เรียกใช้ SharedPreferences
+  await Utility.initSharedPrefs();
+
+  // ถ้าเคย Login แล้ว ให้ไปยังหน้า Dashboard
+  if (Utility.getSharedPreference('loginStatus') == true) {
+    initialRoute = AppRouter.dashboard;
+  } else if (Utility.getSharedPreference('welcomeStatus') == true) {
+    // ถ้าเคยแสดง Intro แล้ว ให้ไปยังหน้า Login
+    initialRoute = AppRouter.login;
+  } else {
+    // ถ้ายังไม่เคยแสดง Intro ให้ไปยังหน้า Welcome
+    initialRoute = AppRouter.welcome;
+  }
 
   // if (kIsWeb) {
   //   await Firebase.initializeApp(
@@ -47,7 +61,7 @@ class MyApp extends StatelessWidget {
           useMaterial3: true,
           appBarTheme: const AppBarTheme(color: primary),
         ),
-        initialRoute: AppRouter.welcome,
+        initialRoute: initialRoute,
         routes: AppRouter.routes,
       ),
     );

@@ -7,14 +7,6 @@ import 'package:firebase_storage/firebase_storage.dart';
 class FirebaseAuthService {
   final FirebaseAuth _auth = FirebaseAuth.instance;
 
-  // upLoadImage(_image) async {
-  //   var imageName = DateTime.now().millisecondsSinceEpoch.toString();
-  //   var storageRef =
-  //       FirebaseStorage.instance.ref().child('driver_images/$imageName.jpg');
-  //   var uploadTask = storageRef.putFile(_image!);
-  //   var downloadUrl = await (await uploadTask).ref.getDownloadURL();
-  // }
-
   Future<User?> sigUpWithEmailAndPassWord(
     String email,
     String password,
@@ -35,7 +27,7 @@ class FirebaseAuthService {
         password: password,
       );
 
-      final imageName = credential.user!.uid;
+      final imageName = imageFile;
       final imageRef =
           FirebaseStorage.instance.ref().child('images/$imageName.jpg');
 
