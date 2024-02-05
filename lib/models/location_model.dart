@@ -1,6 +1,19 @@
-class Location {
-  final String province;
-  final List<String> districts;
+class LocationsModel {
+  String locationId;
+  String locaName;
+  String locaDes;
+  String locaImage;
+  String phone;
+  double locaLatitude;
+  double locaLongitude;
 
-  Location({required this.province, required this.districts});
+  LocationsModel({
+    required this.locationId,
+    required this.locaName,
+    required this.locaDes,
+    required this.locaImage,
+    required this.phone,
+    required this.locaLatitude,
+    required this.locaLongitude,
+  });
 }

@@ -3,9 +3,10 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:office_syndrome_v2/app_router.dart';
-import 'package:office_syndrome_v2/screens/bottomnavpage/home_screen.dart';
-import 'package:office_syndrome_v2/screens/bottomnavpage/profile_screen.dart';
+import 'package:office_syndrome_v2/screens/users/bottomnavpage/home_screen.dart';
+import 'package:office_syndrome_v2/screens/users/bottomnavpage/profile_screen.dart';
 import 'package:office_syndrome_v2/themes/colors.dart';
+import 'package:office_syndrome_v2/utils/utility.dart';
 
 class DashboardScreen extends StatefulWidget {
   const DashboardScreen({super.key});
@@ -47,7 +48,16 @@ class _DashboardScreenState extends State<DashboardScreen> {
 
   void sigOut() {
     FirebaseAuth.instance.signOut();
-    Navigator.pushReplacementNamed(context, AppRouter.login);
+    // Remove token, loginStatus shared preference
+    Utility.removeSharedPreference('token');
+    Utility.removeSharedPreference('loginStatus');
+
+    // Clear all route and push to login screen
+    Navigator.pushNamedAndRemoveUntil(
+      context,
+      AppRouter.login,
+      (route) => false,
+    );
   }
 
   @override

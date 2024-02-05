@@ -1,20 +1,17 @@
-// ignore_for_file: prefer_const_constructors
-
 import 'package:flutter/material.dart';
-import 'package:office_syndrome_v2/models/product_category_model.dart';
-import 'package:office_syndrome_v2/screens/products/components/product_video.dart';
-import 'package:office_syndrome_v2/services/product_service.dart';
+import 'package:office_syndrome_v2/models/location_model.dart';
+import 'package:office_syndrome_v2/services/region_service.dart';
 
-class ProductItem extends StatefulWidget {
-  const ProductItem({super.key});
+class RegionScreen extends StatefulWidget {
+  const RegionScreen({super.key});
 
   @override
-  State<ProductItem> createState() => _ProductItemState();
+  State<RegionScreen> createState() => _RegionScreenState();
 }
 
-class _ProductItemState extends State<ProductItem> {
-  final ProductService _productService = ProductService();
-  late List<ProductCategory> _productsAllCategory = [];
+class _RegionScreenState extends State<RegionScreen> {
+  final RegionService _regionService = RegionService();
+  late List<LocationsModel> _regionsAll = [];
   // Toggle between ListView and GridView
   bool _isGridView = true;
 
@@ -35,11 +32,11 @@ class _ProductItemState extends State<ProductItem> {
   Future<void> _getAllProducts() async {
     try {
       // Attempt to get all products using the _productService
-      List<ProductCategory> getAll = await _productService.getAllProducts();
+      List<LocationsModel> getAll = await _regionService.getAllRegion();
 
       // If successful, update the state with the received data
       setState(() {
-        _productsAllCategory = getAll;
+        _regionsAll = getAll;
       });
     } catch (e) {
       // If an error occurs during the fetch operation, print the error message
@@ -67,10 +64,10 @@ class _ProductItemState extends State<ProductItem> {
   // ListView Widget -----------------------------------------
   Widget _ListView() {
     return ListView.builder(
-      itemCount: _productsAllCategory.length,
+      itemCount: _regionsAll.length,
       itemBuilder: (context, index) {
-        ProductCategory AllProduct = _productsAllCategory[index];
-        return Card(child: _listItem(AllProduct));
+        LocationsModel regionsAll = _regionsAll[index];
+        return Card(child: _listItem(regionsAll));
       },
     );
   }
@@ -83,31 +80,31 @@ class _ProductItemState extends State<ProductItem> {
         mainAxisSpacing: 5,
         mainAxisExtent: 200,
       ),
-      itemCount: _productsAllCategory.length,
+      itemCount: _regionsAll.length,
       itemBuilder: (context, index) {
-        ProductCategory AllProduct = _productsAllCategory[index];
-        return Card(child: _listItem(AllProduct));
+        LocationsModel regionsAll = _regionsAll[index];
+        return Card(child: _listItem(regionsAll));
       },
     );
   }
 
   // ListTile แสดงวิดีโอ
-  Widget _listItem(ProductCategory AllProduct) {
+  Widget _listItem(LocationsModel AllRegion) {
     return ListTile(
       leading: CircleAvatar(
         backgroundImage: AssetImage('assets/images/noavartar.png'),
       ),
-      title: Text(AllProduct.categoryName),
+      title: Text(AllRegion.locaName),
       subtitle: Text(""),
       trailing: IconButton(
           onPressed: () {
-            Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => ProductVideo(
-                    productCategory: AllProduct,
-                  ),
-                ));
+            // Navigator.push(
+            //     context,
+            //     MaterialPageRoute(
+            //       builder: (context) => ProductVideo(
+            //         productCategory: AllProduct,
+            //       ),
+            //     ));
           },
           icon: Icon(Icons.chevron_right)),
     );

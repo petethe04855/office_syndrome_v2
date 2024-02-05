@@ -6,6 +6,7 @@ import 'package:firebase_storage/firebase_storage.dart';
 
 class FirebaseAuthService {
   final FirebaseAuth _auth = FirebaseAuth.instance;
+  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
   Future<User?> sigUpWithEmailAndPassWord(
     String email,
@@ -63,5 +64,31 @@ class FirebaseAuthService {
       print(e);
       return null;
     }
+  }
+
+  Future<Map<String, dynamic>?> getUserData() async {
+    try {
+      String uid = _auth.currentUser?.uid ?? "";
+      DocumentSnapshot<Map<String, dynamic>> userDoc =
+          await _firestore.collection('Users').doc(uid).get();
+
+      if (userDoc.exists) {
+        return userDoc.data();
+      } else {
+        return null;
+      }
+    } catch (e) {
+      print('Error getting user data: $e');
+      return null;
+    }
+  }
+
+  Future<void> updateUser(
+      String email, String first_name, String last_name) async {
+    await FirebaseFirestore.instance
+        .collection('Users')
+        .doc(_auth.currentUser?.uid)
+        .update(
+            {'email': email, 'first_name': first_name, 'last_name': last_name});
   }
 }

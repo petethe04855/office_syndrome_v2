@@ -1,12 +1,12 @@
-import 'package:animations/animations.dart';
 import 'package:flutter/material.dart';
-import 'package:office_syndrome_v2/models/product_model.dart';
+import 'package:office_syndrome_v2/models/product_category_model.dart';
+import 'package:office_syndrome_v2/screens/products/components/product_video.dart';
 import 'package:office_syndrome_v2/services/product_service.dart';
-import 'package:office_syndrome_v2/utils/utility.dart';
 
 class ProductForm extends StatefulWidget {
   final String brandsId;
   final String categoryId;
+
   const ProductForm({
     required this.brandsId,
     required this.categoryId,
@@ -18,117 +18,62 @@ class ProductForm extends StatefulWidget {
 }
 
 class _ProductFormState extends State<ProductForm> {
-  late List<Product> _products = [];
+  final ProductService _productService = ProductService();
+
+  late List<ProductCategory> _productsCategory = [];
 
   @override
   void initState() {
-    super.initState();
     _fetchData();
+    super.initState();
   }
 
   Future<void> _fetchData() async {
-    // Fetch products from your service or repository
-    List<Product> products = await ProductService().getProducts();
+    try {
+      List<ProductCategory> productsCategory =
+          await _productService.getProductsCategory();
 
-    // Filter products based on brandsId and categoryId
-    _products =
-        _getFilteredProducts(widget.brandsId, widget.categoryId, products);
+      _productsCategory = _productService.getFilteredProducts(
+          widget.brandsId, productsCategory);
 
-    // Set the state to trigger a rebuild with the filtered products
-    setState(() {});
-  }
-
-  List<Product> _getFilteredProducts(
-      String brandId, String categoryId, List<Product> allProducts) {
-    return allProducts.where((product) {
-      return product.categoryId == brandId && product.productId == categoryId;
-    }).toList();
+      setState(() {});
+    } catch (e) {
+      print("Error fetching data: $e");
+    }
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(""),
-        actions: [
-          IconButton(
-            onPressed: () {},
-            icon: const Icon(Icons.add),
-          ),
-        ],
+        title: Text('Product Form'),
       ),
       body: ListView.builder(
-        itemCount: _products.length,
+        itemCount: _productsCategory.length,
         itemBuilder: (context, index) {
-          Product product = _products[index];
-          return ListTile(
-            leading: CircleAvatar(
-              backgroundImage: AssetImage('assets/images/noavartar.png'),
+          ProductCategory product = _productsCategory[index];
+          return Card(
+            child: ListTile(
+              leading: CircleAvatar(
+                backgroundImage: NetworkImage(product.categoryImage),
+              ),
+              title: Text(product.categoryName),
+              // Add other widgets or navigate to product_video as needed
+              trailing: Icon(Icons.chevron_right),
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => ProductVideo(
+                      productCategory: product,
+                    ),
+                  ),
+                );
+              },
             ),
-            subtitle: Text(product.categoryId),
-            title: Text(product.name),
-            trailing: Icon(Icons.chevron_right),
           );
         },
       ),
-    );
-  }
-
-  Widget _ListView() {
-    return ListView.builder(
-      itemCount: 10,
-      itemBuilder: (context, index) {
-        return OpenContainer(
-          transitionType: ContainerTransitionType.fade,
-          // transitionDuration กำหนดควาามเร็ว animation
-          transitionDuration: Duration(milliseconds: 600),
-          closedBuilder: (context, action) {
-            return _listItem();
-          },
-          openBuilder: (context, action) {
-            return Container();
-          },
-        );
-      },
-    );
-  }
-
-  Widget _gridView() {
-    return GridView.builder(
-      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-        crossAxisCount: 2, // จำนวนคอลัมน์
-        crossAxisSpacing: 5,
-        mainAxisSpacing: 5,
-        mainAxisExtent: 200,
-      ),
-      itemCount: 10,
-      itemBuilder: (context, index) {
-        return Card(
-          child: OpenContainer(
-            transitionType: ContainerTransitionType.fade,
-            // transitionDuration กำหนดควาามเร็ว animation
-            transitionDuration: Duration(milliseconds: 600),
-            closedBuilder: (context, action) {
-              return _listItem();
-            },
-            openBuilder: (context, action) {
-              return Container();
-            },
-          ),
-        );
-      },
-    );
-  }
-
-// ListTile แสดงวิดีโอ
-  Widget _listItem() {
-    return ListTile(
-      leading: CircleAvatar(
-        backgroundImage: AssetImage('assets/images/noavartar.png'),
-      ),
-      subtitle: Text("brands[widget.index].brandId"),
-      title: Text("brands[widget.index].brandName"),
-      trailing: Icon(Icons.chevron_right),
     );
   }
 }
