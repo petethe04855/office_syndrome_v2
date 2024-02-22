@@ -1,6 +1,8 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:office_syndrome_v2/app_router.dart';
-import 'package:office_syndrome_v2/providers/location_provider%20.dart';
+import 'package:office_syndrome_v2/providers/data_user_provider.dart';
+import 'package:office_syndrome_v2/providers/getdata_provider.dart';
 import 'package:office_syndrome_v2/themes/colors.dart';
 import 'package:office_syndrome_v2/utils/utility.dart';
 import 'package:provider/provider.dart';
@@ -15,6 +17,8 @@ void main() async {
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
+  final FirebaseAuth _statusAuth = FirebaseAuth.instance;
+
   // เรียกใช้ SharedPreferences
   await Utility.initSharedPrefs();
 
@@ -51,7 +55,10 @@ class MyApp extends StatelessWidget {
     return MultiProvider(
       providers: [
         ChangeNotifierProvider(
-          create: (_) => LocationProvider(),
+          create: (_) => DataUserProvider(),
+        ),
+        ChangeNotifierProvider(
+          create: (_) => GetDataProvider(),
         ),
       ],
       child: MaterialApp(

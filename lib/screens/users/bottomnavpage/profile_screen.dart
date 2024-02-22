@@ -1,9 +1,11 @@
 // ignore_for_file: prefer_const_constructors
 
 import 'package:flutter/material.dart';
-import 'package:office_syndrome_v2/app_router.dart';
+import 'package:office_syndrome_v2/providers/getdata_provider.dart';
+import 'package:office_syndrome_v2/screens/users/editprofile/edit_profile_screen.dart';
 import 'package:office_syndrome_v2/services/firbase_auth_services.dart';
 import 'package:office_syndrome_v2/themes/colors.dart';
+import 'package:provider/provider.dart';
 
 class ProfileScreen extends StatefulWidget {
   const ProfileScreen({super.key});
@@ -16,41 +18,54 @@ class _ProfileScreenState extends State<ProfileScreen> {
   final FirebaseAuthService _userService = FirebaseAuthService();
   Map<String, dynamic>? userData;
 
-  void _fetchUserData() async {
-    try {
-      // ดึงข้อมูลผู้ใช้
-      userData = await _userService.getUserData();
+  // void _fetchUserData() async {
+  //   try {
+  //     // ดึงข้อมูลผู้ใช้
+  //     userData = await _userService.getUserData();
 
-      // อัพเดท UI หลังจากดึงข้อมูลเสร็จสมบูรณ์
-      if (mounted) {
-        setState(() {});
-      }
-    } catch (e) {
-      print('Error fetching user data: $e');
-    }
-  }
+  //     // อัพเดท UI หลังจากดึงข้อมูลเสร็จสมบูรณ์
+  //     if (mounted) {
+  //       setState(() {});
+  //     }
+  //   } catch (e) {
+  //     print('Error fetching user data: $e');
+  //   }
+  // }
 
   @override
   void initState() {
     // TODO: implement initState
-    _fetchUserData();
+    // _fetchUserData();
     super.initState();
+    Provider.of<GetDataProvider>(context, listen: false).fetchUserData();
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        body: ListView(
-      shrinkWrap: true,
-      children: [
-        _buildHeader(),
-        _buildListMenu(),
-      ],
-    ));
+      body: Consumer<GetDataProvider>(
+        builder: (context, getDataProvider, child) {
+          final userData = getDataProvider.provideGetData;
+
+          return ListView(
+            shrinkWrap: true,
+            children: [
+              _buildHeader(userData),
+              _buildListMenu(userData),
+            ],
+          );
+        },
+      ),
+    );
   }
 
   // สร้าง widget สำหรับแสดงข้อมูล profile ที่อ่านมาจาก shared preference
-  Widget _buildHeader() {
+  Widget _buildHeader(userData) {
+    final getDataProvider = Provider.of<GetDataProvider>(context);
+
+    getDataProvider.onDataUpdated = () {
+      setState(() {});
+    };
     return Container(
       height: 250,
       decoration: BoxDecoration(
@@ -90,7 +105,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
     );
   }
 
-  Widget _buildListMenu() {
+  Widget _buildListMenu(userData) {
     return Column(
       children: [
         ListTile(
@@ -101,7 +116,14 @@ class _ProfileScreenState extends State<ProfileScreen> {
             size: 16,
           ),
           onTap: () async {
-            await Navigator.pushNamed(context, AppRouter.editProfile);
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) {
+                  return EditProfileScreen(data: userData);
+                },
+              ),
+            );
           },
         ),
         ListTile(

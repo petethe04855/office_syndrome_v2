@@ -1,5 +1,6 @@
 // ignore_for_file: prefer_const_constructors
 
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:office_syndrome_v2/models/product_category_model.dart';
 import 'package:office_syndrome_v2/screens/products/components/product_video.dart';
@@ -15,8 +16,11 @@ class ProductItem extends StatefulWidget {
 class _ProductItemState extends State<ProductItem> {
   final ProductService _productService = ProductService();
   late List<ProductCategory> _productsAllCategory = [];
+  final _searchController = TextEditingController();
   // Toggle between ListView and GridView
   bool _isGridView = true;
+
+  String _searchQuery = '';
 
   // สร้างฟังก์ชันสลับระหว่าง ListView และ GridView
   void _toggleView() {
@@ -60,22 +64,54 @@ class _ProductItemState extends State<ProductItem> {
           )
         ],
       ),
-      body: _isGridView ? _gridView() : _ListView(),
+      body: Padding(
+        padding: const EdgeInsets.all(10.0),
+        child: Column(
+          children: [
+            const SizedBox(
+              height: 20,
+            ),
+            CupertinoSearchTextField(
+              controller: _searchController,
+              onChanged: (value) {
+                setState(() {
+                  _searchQuery = value.toLowerCase().trim();
+                });
+              },
+            ),
+            const SizedBox(
+              height: 20,
+            ),
+            Expanded(
+              child: _isGridView ? _gridView() : _ListView(),
+            ),
+          ],
+        ),
+      ),
     );
   }
 
   // ListView Widget -----------------------------------------
   Widget _ListView() {
+    List<ProductCategory> filteredRegions = _productsAllCategory
+        .where((location) =>
+            location.categoryName.toLowerCase().contains(_searchQuery))
+        .toList();
+
     return ListView.builder(
-      itemCount: _productsAllCategory.length,
+      itemCount: filteredRegions.length,
       itemBuilder: (context, index) {
-        ProductCategory AllProduct = _productsAllCategory[index];
+        ProductCategory AllProduct = filteredRegions[index];
         return Card(child: _listItem(AllProduct));
       },
     );
   }
 
   Widget _gridView() {
+    List<ProductCategory> filteredRegions = _productsAllCategory
+        .where((location) =>
+            location.categoryName.toLowerCase().contains(_searchQuery))
+        .toList();
     return GridView.builder(
       gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
         crossAxisCount: 2, // จำนวนคอลัมน์
@@ -83,9 +119,9 @@ class _ProductItemState extends State<ProductItem> {
         mainAxisSpacing: 5,
         mainAxisExtent: 200,
       ),
-      itemCount: _productsAllCategory.length,
+      itemCount: filteredRegions.length,
       itemBuilder: (context, index) {
-        ProductCategory AllProduct = _productsAllCategory[index];
+        ProductCategory AllProduct = filteredRegions[index];
         return Card(child: _listItem(AllProduct));
       },
     );
@@ -102,12 +138,13 @@ class _ProductItemState extends State<ProductItem> {
       trailing: IconButton(
           onPressed: () {
             Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => ProductVideo(
-                    productCategory: AllProduct,
-                  ),
-                ));
+              context,
+              MaterialPageRoute(
+                builder: (context) => ProductVideo(
+                  productCategory: AllProduct,
+                ),
+              ),
+            );
           },
           icon: Icon(Icons.chevron_right)),
     );

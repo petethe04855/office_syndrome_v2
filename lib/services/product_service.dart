@@ -5,13 +5,6 @@ import 'package:office_syndrome_v2/models/product_category_model.dart';
 class ProductService {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
-  Future<List<String>> getBrandIds() async {
-    QuerySnapshot brandSnapshot =
-        await _firestore.collection('BrandCategory').get();
-
-    return brandSnapshot.docs.map((doc) => doc.id).toList();
-  }
-
   Future<List<ProductCategory>> getAllProducts() async {
     QuerySnapshot productSnapshot =
         await _firestore.collection('ProductCategory').get();
@@ -34,27 +27,11 @@ class ProductService {
     return productList;
   }
 
-  Future<List<String>> getProductIdsByBrandAndCategory(
-      String categoryId, String productId) async {
+  Future<List<ProductCategory>> getProductsCategory() async {
     QuerySnapshot productSnapshot = await _firestore
         .collection('ProductCategory')
-        .where('categoryId', isEqualTo: categoryId)
-        .where('productId', isEqualTo: productId)
+        .where('categoryName')
         .get();
-
-    return productSnapshot.docs.map((doc) => doc.id).toList();
-  }
-
-  Future<Map<String, dynamic>> getProductDetails(String productId) async {
-    DocumentSnapshot productDoc =
-        await _firestore.collection('Products').doc(productId).get();
-
-    return productDoc.data() as Map<String, dynamic>;
-  }
-
-  Future<List<ProductCategory>> getProductsCategory() async {
-    QuerySnapshot productSnapshot =
-        await _firestore.collection('ProductCategory').get();
 
     List<ProductCategory> productsCategory = productSnapshot.docs.map((doc) {
       Map<String, dynamic> data = doc.data() as Map<String, dynamic>;

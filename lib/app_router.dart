@@ -5,7 +5,6 @@ import 'package:office_syndrome_v2/screens/users/dashboard/dashboard_screen.dart
 import 'package:office_syndrome_v2/screens/login/login_screen.dart';
 import 'package:office_syndrome_v2/screens/products/components/product_item.dart';
 import 'package:office_syndrome_v2/screens/register/register_screen.dart';
-import 'package:office_syndrome_v2/screens/users/editprofile/edit_profile_screen.dart';
 import 'package:office_syndrome_v2/screens/welcome/welcome_screen.dart';
 
 class AppRouter {
@@ -15,7 +14,7 @@ class AppRouter {
   static const String dashboard = 'dashboard';
   static const String productScreen = 'productScreen';
   static const String productItem = 'productItem';
-  static const String editProfile = 'editProfile';
+  // static const String editProfile = 'editProfile';
   static const String region = 'region';
 
   // Router Map
@@ -25,7 +24,7 @@ class AppRouter {
         register: (context) => RegisterScreen(),
         dashboard: (context) => DashboardScreen(),
         productItem: (context) => ProductItem(),
-        editProfile: (context) => EditProfileScreen(),
+        // editProfile: (context) => EditProfileScreen(),
         region: (context) => RegionScreen(),
       };
 }

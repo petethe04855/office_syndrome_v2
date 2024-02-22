@@ -15,7 +15,7 @@ class FirebaseAuthService {
     String lastName,
     String confirmPassword,
     String role,
-    File? imageFile,
+    File? _imageFile,
   ) async {
     try {
       if (password != confirmPassword) {
@@ -28,9 +28,10 @@ class FirebaseAuthService {
         password: password,
       );
 
-      final imageName = imageFile;
+      final imageFile = _imageFile;
+      final imageName = credential.user!.uid;
       final imageRef =
-          FirebaseStorage.instance.ref().child('images/$imageName.jpg');
+          FirebaseStorage.instance.ref().child('users/image/$imageName.jpg');
 
       await imageRef.putFile(imageFile!);
 
@@ -84,11 +85,38 @@ class FirebaseAuthService {
   }
 
   Future<void> updateUser(
-      String email, String first_name, String last_name) async {
-    await FirebaseFirestore.instance
-        .collection('Users')
-        .doc(_auth.currentUser?.uid)
-        .update(
-            {'email': email, 'first_name': first_name, 'last_name': last_name});
+      String first_name, String last_name, File? _imageFile) async {
+    try {
+      if (_imageFile != null) {
+        final imageFile = _imageFile;
+        final imageName = _auth.currentUser?.uid;
+        final imageRef =
+            FirebaseStorage.instance.ref().child('users/image/$imageName.jpg');
+
+        await imageRef.putFile(imageFile!);
+
+        final imageUrl = await imageRef.getDownloadURL();
+
+        await FirebaseFirestore.instance
+            .collection('Users')
+            .doc(_auth.currentUser?.uid)
+            .update({
+          'first_name': first_name,
+          'last_name': last_name,
+          'images': imageUrl,
+        });
+      } else {
+        // ถ้าไม่มีการเปลี่ยนรูป ให้ใช้ข้อมูลเดิม
+        await FirebaseFirestore.instance
+            .collection('Users')
+            .doc(_auth.currentUser?.uid)
+            .update({
+          'first_name': first_name,
+          'last_name': last_name,
+        });
+      }
+    } catch (e) {
+      print('Error updating user data: $e');
+    }
   }
 }
