@@ -15,27 +15,6 @@ class ProductVideo extends StatefulWidget {
 }
 
 class _ProductVideoState extends State<ProductVideo> {
-  // late VideoPlayerController _videoControllers;
-  // late bool _isPlaying;
-
-  // int count = 0;
-
-  // @override
-  // void initState() {
-  //   count++;
-  //   print("Loading ${count}");
-
-  //   super.initState();
-  //   _videoControllers =
-  //       VideoPlayerController.network(widget.productCategory.videoUrl)
-  //         ..initialize().then((_) => setState(() {}));
-  // }
-
-  // void dispose() {
-  //   super.dispose();
-  //   _videoControllers.dispose();
-  // }
-
   late VideoPlayerController _videoPlayerController;
   late ChewieController _chewieController;
 

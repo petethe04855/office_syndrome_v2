@@ -37,6 +37,8 @@ class _RegisterFormState extends State<RegisterForm> {
 
   List<String> _position = ['ผู้ป่วย', 'หมอ'];
 
+  String? _selectedPosition;
+
   @override
   Widget build(BuildContext context) {
     return Padding(
@@ -162,13 +164,14 @@ class _RegisterFormState extends State<RegisterForm> {
                           _firstNameController.text,
                           _lastNameController.text,
                           _confirmPasswordController.text,
-                          _position.first,
+                          _selectedPosition.toString(),
                           _imageFile,
                         );
                         // FirebaseAuthService().upLoadImage(_imageFile);
                         Navigator.pushReplacementNamed(
                             context, AppRouter.login);
                       }
+                      print("Register_selectedPosition ${_selectedPosition}");
                     },
                     icon: null,
                   ),
@@ -188,7 +191,10 @@ class _RegisterFormState extends State<RegisterForm> {
   Widget customDropdown() {
     return DropdownButtonFormField<String>(
       hint: Text(_position.first),
+      value: _position.first,
       onChanged: (value) {
+        _selectedPosition = value;
+        print("_selectedPosition ${_selectedPosition}");
         setState(() {
           print(value);
         });

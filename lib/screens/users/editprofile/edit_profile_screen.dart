@@ -25,11 +25,9 @@ class EditProfileScreen extends StatefulWidget {
 class _EditProfileScreenState extends State<EditProfileScreen> {
   // Provider.of<GetDataProvider>(context, listen: false).fetchUserData();
   final _EditKey = GlobalKey<FormState>();
-  final FirebaseAuthService _userService = FirebaseAuthService();
   final _fnameController = TextEditingController();
   final _lnameController = TextEditingController();
   File? _imageFile;
-  String? _imageName;
   bool isEdit = false;
   bool isButton = false;
 
@@ -40,7 +38,6 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
 
     _fnameController.text = widget.data!['first_name'];
     _lnameController.text = widget.data!['last_name'];
-    final _picker = ImagePicker();
 
     return Scaffold(
       appBar: AppBar(

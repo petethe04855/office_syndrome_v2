@@ -1,5 +1,6 @@
 // ignore_for_file: unused_field, must_be_immutable, use_build_context_synchronously
 
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:office_syndrome_v2/app_router.dart';
 import 'package:office_syndrome_v2/components/custom_textfield.dart';
@@ -116,27 +117,73 @@ class _LoginFormState extends State<LoginForm> {
                   const SizedBox(
                     height: 10,
                   ),
-                  RoundedButton(
-                      label: "LOGIN",
-                      onPressed: () async {
-                        // Navigator.pushReplacementNamed(
-                        //     context, AppRouter.dashboard);
-                        if (_formKeyLogin.currentState!.validate()) {
-                          _formKeyLogin.currentState!.save();
-                          // _signIn();
+                  // RoundedButton(
+                  //   label: "LOGIN",
+                  //   onPressed: () async {
+                  //     // Navigator.pushReplacementNamed(
+                  //     //     context, AppRouter.dashboard);
+                  //     if (_formKeyLogin.currentState!.validate()) {
+                  //       _formKeyLogin.currentState!.save();
+                  //       // _signIn();
 
+                  //       await Utility.setSharedPreference('loginStatus', true);
+
+                  //       FirebaseAuthService().sigInWithEmailAndPassWord(
+                  //           _emailController.text, _passwordController.text);
+                  //       Navigator.pushReplacementNamed(
+                  //         context,
+                  //         AppRouter.dashboard,
+                  //       );
+                  //     }
+                  //   },
+                  //   icon: null,
+                  // ),
+                  RoundedButton(
+                    label: "LOGIN",
+                    onPressed: () async {
+                      if (_formKeyLogin.currentState!.validate()) {
+                        _formKeyLogin.currentState!.save();
+
+                        // Perform Firebase authentication
+                        try {
+                          await FirebaseAuthService().sigInWithEmailAndPassWord(
+                            _emailController.text,
+                            _passwordController.text,
+                          );
+
+                          // Successfully authenticated, set login status and fetch user role
                           await Utility.setSharedPreference(
                               'loginStatus', true);
 
-                          FirebaseAuthService().sigInWithEmailAndPassWord(
-                              _emailController.text, _passwordController.text);
-                          Navigator.pushReplacementNamed(
-                            context,
-                            AppRouter.dashboard,
-                          );
+                          // Get the current user's ID from Firebase
+                          String userId =
+                              FirebaseAuth.instance.currentUser!.uid;
+
+                          // Fetch user role from Firestore
+                          String? userRole =
+                              await Utility.fetchUserRoleFromFirestore(userId);
+
+                          // Determine the route based on the user role
+                          if (userRole == 'ผู้ป่วย') {
+                            Navigator.pushReplacementNamed(
+                                context, AppRouter.dashboard);
+                          } else if (userRole == 'หมอ') {
+                            Navigator.pushReplacementNamed(
+                                context, AppRouter.doctor);
+                          } else {
+                            // Handle other roles or defaults
+                            Navigator.pushReplacementNamed(
+                                context, AppRouter.dashboard);
+                          }
+                        } catch (e) {
+                          // Handle authentication errors
+                          print('Authentication error: $e');
+                          // You might want to show an error message to the user
                         }
-                      },
-                      icon: null)
+                      }
+                    },
+                    icon: null,
+                  ),
                 ],
               )),
           const SizedBox(

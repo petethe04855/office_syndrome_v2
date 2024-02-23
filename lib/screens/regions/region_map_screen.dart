@@ -42,7 +42,6 @@ class _RegionMapScreenState extends State<RegionMapScreen> {
 
   @override
   void initState() {
-    // getLocationRegion();
     getCurrentLocation();
     super.initState();
   }

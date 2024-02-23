@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:logger/logger.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -48,5 +49,20 @@ class Utility {
     if (_preferences == null) return false;
     return _preferences!.containsKey(key);
   }
+
   // ----------------------------------------------------------------
+  static Future<String?> fetchUserRoleFromFirestore(userId) async {
+    try {
+      DocumentSnapshot userSnapshot = await FirebaseFirestore.instance
+          .collection('Users')
+          .doc(userId)
+          .get();
+
+      // Replace 'role' with the actual field name in your Firestore document
+      return userSnapshot['Role'] as String?;
+    } catch (e) {
+      print('Error fetching user role: $e');
+      return null;
+    }
+  }
 }

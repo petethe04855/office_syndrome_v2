@@ -7,6 +7,7 @@ import 'package:firebase_storage/firebase_storage.dart';
 class FirebaseAuthService {
   final FirebaseAuth _auth = FirebaseAuth.instance;
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+  bool status = false;
 
   Future<User?> sigUpWithEmailAndPassWord(
     String email,
@@ -28,26 +29,41 @@ class FirebaseAuthService {
         password: password,
       );
 
-      final imageFile = _imageFile;
-      final imageName = credential.user!.uid;
-      final imageRef =
-          FirebaseStorage.instance.ref().child('users/image/$imageName.jpg');
+      if (role == "ผู้ป่วย") {
+        final imageFile = _imageFile;
+        final imageName = credential.user!.uid;
+        final imageRef =
+            FirebaseStorage.instance.ref().child('users/image/$imageName.jpg');
 
-      await imageRef.putFile(imageFile!);
+        await imageRef.putFile(imageFile!);
 
-      final imageUrl = await imageRef.getDownloadURL();
+        final imageUrl = await imageRef.getDownloadURL();
 
-      await FirebaseFirestore.instance
-          .collection('Users')
-          .doc(credential.user!.uid)
-          .set({
-        'uid': credential.user!.uid,
-        'first_name': firstName,
-        'last_name': lastName,
-        'email': email,
-        'images': imageUrl,
-        'Role': role,
-      });
+        await FirebaseFirestore.instance
+            .collection('Users')
+            .doc(credential.user!.uid)
+            .set({
+          'uid': credential.user!.uid,
+          'first_name': firstName,
+          'last_name': lastName,
+          'email': email,
+          'images': imageUrl,
+          'Role': role,
+          // 'status': status,
+        });
+      } else if (role == "หมอ") {
+        await FirebaseFirestore.instance
+            .collection('Users')
+            .doc(credential.user!.uid)
+            .set({
+          'uid': credential.user!.uid,
+          'first_name': firstName,
+          'last_name': lastName,
+          'email': email,
+          'Role': role,
+          'status': status,
+        });
+      }
 
       return credential.user;
     } on FirebaseAuthException catch (e) {

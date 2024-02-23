@@ -1,12 +1,9 @@
-import 'dart:io';
-
 import 'package:flutter/material.dart';
 import 'package:office_syndrome_v2/app_router.dart';
 import 'package:office_syndrome_v2/models/brand_category_model.dart';
 import 'package:office_syndrome_v2/models/region_model.dart';
 import 'package:office_syndrome_v2/screens/products/components/product_form.dart';
 import 'package:office_syndrome_v2/screens/regions/region_form.dart';
-import 'package:office_syndrome_v2/screens/register/components/register_image.dart';
 import 'package:office_syndrome_v2/services/product_service.dart';
 import 'package:office_syndrome_v2/services/region_service.dart';
 import 'package:office_syndrome_v2/themes/colors.dart';

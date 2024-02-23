@@ -3,7 +3,6 @@
 import 'package:flutter/material.dart';
 import 'package:office_syndrome_v2/providers/getdata_provider.dart';
 import 'package:office_syndrome_v2/screens/users/editprofile/edit_profile_screen.dart';
-import 'package:office_syndrome_v2/services/firbase_auth_services.dart';
 import 'package:office_syndrome_v2/themes/colors.dart';
 import 'package:provider/provider.dart';
 
@@ -15,22 +14,7 @@ class ProfileScreen extends StatefulWidget {
 }
 
 class _ProfileScreenState extends State<ProfileScreen> {
-  final FirebaseAuthService _userService = FirebaseAuthService();
   Map<String, dynamic>? userData;
-
-  // void _fetchUserData() async {
-  //   try {
-  //     // ดึงข้อมูลผู้ใช้
-  //     userData = await _userService.getUserData();
-
-  //     // อัพเดท UI หลังจากดึงข้อมูลเสร็จสมบูรณ์
-  //     if (mounted) {
-  //       setState(() {});
-  //     }
-  //   } catch (e) {
-  //     print('Error fetching user data: $e');
-  //   }
-  // }
 
   @override
   void initState() {

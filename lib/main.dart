@@ -17,33 +17,45 @@ void main() async {
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
-  final FirebaseAuth _statusAuth = FirebaseAuth.instance;
+
+  // กำหนดตัวแปร initialRoute ให้กับ MaterialApp
+  var _authUser = FirebaseAuth.instance;
 
   // เรียกใช้ SharedPreferences
   await Utility.initSharedPrefs();
 
-  // ถ้าเคย Login แล้ว ให้ไปยังหน้า Dashboard
+  // //ถ้าเคย Login แล้ว ให้ไปยังหน้า Dashboard
+  // if (Utility.getSharedPreference('loginStatus') == true) {
+  //   initialRoute = AppRouter.dashboard;
+  // } else if (Utility.getSharedPreference('welcomeStatus') == true) {
+  //   // ถ้าเคยแสดง Intro แล้ว ให้ไปยังหน้า Login
+  //   initialRoute = AppRouter.login;
+  // } else {
+  //   // ถ้ายังไม่เคยแสดง Intro ให้ไปยังหน้า Welcome
+  //   initialRoute = AppRouter.welcome;
+  // }
+
   if (Utility.getSharedPreference('loginStatus') == true) {
-    initialRoute = AppRouter.dashboard;
+    // Fetch user role from Firestore
+    var userRole = await Utility.fetchUserRoleFromFirestore(_authUser
+        .currentUser!.uid); // Replace 'user_id' with the actual user ID
+
+    // Set initialRoute based on user role
+    if (userRole == 'ผู้ป่วย') {
+      initialRoute = AppRouter.dashboard;
+    } else if (userRole == 'หมอ') {
+      initialRoute = AppRouter.doctor;
+    } else {
+      initialRoute = AppRouter.dashboard;
+    }
   } else if (Utility.getSharedPreference('welcomeStatus') == true) {
-    // ถ้าเคยแสดง Intro แล้ว ให้ไปยังหน้า Login
+    // ถ้าเคยแสดง Intro แล้ว
     initialRoute = AppRouter.login;
   } else {
-    // ถ้ายังไม่เคยแสดง Intro ให้ไปยังหน้า Welcome
+    // ถ้ายังไม่เคยแสดง Intro
     initialRoute = AppRouter.welcome;
   }
 
-  // if (kIsWeb) {
-  //   await Firebase.initializeApp(
-  //       options: FirebaseOptions(
-  //     apiKey: "AIzaSyCIj74ZdFF90sPIwotV-a1boNmpjWMHkUg",
-  //     projectId: "office-syndrome-65672",
-  //     messagingSenderId: "673803336541",
-  //     appId: "1:673803336541:web:ec6495a1337e14c65d86b4",
-  //   ));
-  // } else {
-  //   await Firebase.initializeApp();
-  // }
   runApp(const MyApp());
 }
 
