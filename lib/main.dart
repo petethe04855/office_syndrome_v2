@@ -37,17 +37,24 @@ void main() async {
 
   if (Utility.getSharedPreference('loginStatus') == true) {
     // Fetch user role from Firestore
-    var userRole = await Utility.fetchUserRoleFromFirestore(_authUser
-        .currentUser!.uid); // Replace 'user_id' with the actual user ID
+    if (_authUser.currentUser != null) {
+      var userRole = await Utility.checkSharedPreferenceRoleUser(
+          _authUser.currentUser!.uid);
+      if (userRole == 'ผู้ป่วย') {
+        initialRoute = AppRouter.dashboard;
+      } else if (userRole == 'หมอ') {
+        initialRoute = AppRouter.doctorVerifyScreen;
+      } else {
+        initialRoute = AppRouter.dashboard;
+      }
+    } else {
+      // Handle the case when _authUser.currentUser is null
+      print('Error: Current user is null.');
+      initialRoute = AppRouter.login;
+      // You might want to show an error message to the user or handle it appropriately.
+    }
 
     // Set initialRoute based on user role
-    if (userRole == 'ผู้ป่วย') {
-      initialRoute = AppRouter.dashboard;
-    } else if (userRole == 'หมอ') {
-      initialRoute = AppRouter.doctor;
-    } else {
-      initialRoute = AppRouter.dashboard;
-    }
   } else if (Utility.getSharedPreference('welcomeStatus') == true) {
     // ถ้าเคยแสดง Intro แล้ว
     initialRoute = AppRouter.login;

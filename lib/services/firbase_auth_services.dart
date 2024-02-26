@@ -28,17 +28,16 @@ class FirebaseAuthService {
         email: email,
         password: password,
       );
+      final imageFile = _imageFile;
+      final imageName = credential.user!.uid;
+      final imageRef =
+          FirebaseStorage.instance.ref().child('users/image/$imageName.jpg');
+
+      await imageRef.putFile(imageFile!);
+
+      final imageUrl = await imageRef.getDownloadURL();
 
       if (role == "ผู้ป่วย") {
-        final imageFile = _imageFile;
-        final imageName = credential.user!.uid;
-        final imageRef =
-            FirebaseStorage.instance.ref().child('users/image/$imageName.jpg');
-
-        await imageRef.putFile(imageFile!);
-
-        final imageUrl = await imageRef.getDownloadURL();
-
         await FirebaseFirestore.instance
             .collection('Users')
             .doc(credential.user!.uid)
@@ -60,6 +59,7 @@ class FirebaseAuthService {
           'first_name': firstName,
           'last_name': lastName,
           'email': email,
+          'images': imageUrl,
           'Role': role,
           'status': status,
         });
@@ -72,14 +72,35 @@ class FirebaseAuthService {
     }
   }
 
-  Future<User?> sigInWithEmailAndPassWord(String email, String password) async {
+  Future<bool> sigInWithEmailAndPassWord(String email, String password) async {
     try {
-      UserCredential credential = await _auth.signInWithEmailAndPassword(
-          email: email, password: password);
-      return credential.user;
+      // Sign in with the provided email and password
+      await FirebaseAuth.instance.signInWithEmailAndPassword(
+        email: email,
+        password: password,
+      );
+
+      // If there is no error, the password is correct
+      return true;
+    } on FirebaseAuthException catch (e) {
+      // Handle specific FirebaseAuth exceptions
+      if (e.code == 'wrong-password') {
+        // The provided password is incorrect.
+        print('Incorrect password');
+        return false;
+      } else if (e.code == 'user-not-found') {
+        // The user with this email doesn't exist.
+        print('User not found');
+        return false;
+      } else {
+        // Handle other FirebaseAuth exceptions if needed
+        print('Firebase Authentication error: ${e.code}');
+        return false;
+      }
     } catch (e) {
-      print(e);
-      return null;
+      // Handle other errors (e.g., network issues, invalid email/password)
+      print('Error checking password: $e');
+      return false;
     }
   }
 
@@ -109,7 +130,7 @@ class FirebaseAuthService {
         final imageRef =
             FirebaseStorage.instance.ref().child('users/image/$imageName.jpg');
 
-        await imageRef.putFile(imageFile!);
+        await imageRef.putFile(imageFile);
 
         final imageUrl = await imageRef.getDownloadURL();
 

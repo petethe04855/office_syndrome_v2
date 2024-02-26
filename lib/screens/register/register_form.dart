@@ -37,7 +37,7 @@ class _RegisterFormState extends State<RegisterForm> {
 
   List<String> _position = ['ผู้ป่วย', 'หมอ'];
 
-  String? _selectedPosition;
+  String _selectedPosition = 'ผู้ป่วย';
 
   @override
   Widget build(BuildContext context) {
@@ -193,9 +193,10 @@ class _RegisterFormState extends State<RegisterForm> {
       hint: Text(_position.first),
       value: _position.first,
       onChanged: (value) {
-        _selectedPosition = value;
+        _selectedPosition = value.toString();
         print("_selectedPosition ${_selectedPosition}");
         setState(() {
+          _selectedPosition = value.toString();
           print(value);
         });
       },

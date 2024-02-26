@@ -51,17 +51,25 @@ class Utility {
   }
 
   // ----------------------------------------------------------------
-  static Future<String?> fetchUserRoleFromFirestore(userId) async {
+
+  static Future<Map<String, dynamic>?> checkSharedPreferenceRoleUser(
+      userId) async {
     try {
       DocumentSnapshot userSnapshot = await FirebaseFirestore.instance
           .collection('Users')
           .doc(userId)
           .get();
 
-      // Replace 'role' with the actual field name in your Firestore document
-      return userSnapshot['Role'] as String?;
+      // Replace 'Role' and 'status' with the actual field names in your Firestore document
+      Map<String, dynamic> userData = {
+        'Role': userSnapshot['Role'],
+        'status': userSnapshot['status'],
+        // Add other fields as needed
+      };
+
+      return userData;
     } catch (e) {
-      print('Error fetching user role: $e');
+      print('Error fetching user data: $e');
       return null;
     }
   }

@@ -3,14 +3,14 @@ import 'package:flutter/material.dart';
 import 'package:office_syndrome_v2/app_router.dart';
 import 'package:office_syndrome_v2/utils/utility.dart';
 
-class DoctorScreen extends StatefulWidget {
-  const DoctorScreen({super.key});
+class DoctorVerifyScreen extends StatefulWidget {
+  const DoctorVerifyScreen({super.key});
 
   @override
-  State<DoctorScreen> createState() => _DoctorScreenState();
+  State<DoctorVerifyScreen> createState() => _DoctorVerifyScreenState();
 }
 
-class _DoctorScreenState extends State<DoctorScreen> {
+class _DoctorVerifyScreenState extends State<DoctorVerifyScreen> {
   void sigOut() {
     FirebaseAuth.instance.signOut();
     // Remove token, loginStatus shared preference
@@ -29,27 +29,20 @@ class _DoctorScreenState extends State<DoctorScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Doctor'),
+        title: const Text('Check Dr Screen'),
       ),
-      drawer: Drawer(
+      body: Center(
         child: Column(
           children: [
-            ListTile(
-              leading: Icon(
-                Icons.timer_outlined,
-              ),
-              title: Text(
-                'Out',
-              ),
-              onTap: () {
+            const Text('Check Dr Screen'),
+            ElevatedButton(
+              onPressed: () {
                 sigOut();
               },
+              child: const Text('Sign Out'),
             ),
           ],
         ),
-      ),
-      body: const Center(
-        child: Text('Doctor'),
       ),
     );
   }

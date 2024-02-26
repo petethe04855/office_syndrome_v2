@@ -146,39 +146,80 @@ class _LoginFormState extends State<LoginForm> {
 
                         // Perform Firebase authentication
                         try {
-                          await FirebaseAuthService().sigInWithEmailAndPassWord(
+                          bool isAuthenticated =
+                              await _auth.sigInWithEmailAndPassWord(
                             _emailController.text,
                             _passwordController.text,
                           );
 
-                          // Successfully authenticated, set login status and fetch user role
-                          await Utility.setSharedPreference(
-                              'loginStatus', true);
+                          // Inside the onPressed method of the login button
+                          // Inside the onPressed method of the login button
+                          if (isAuthenticated) {
+                            // Successfully authenticated, set login status and fetch user role
+                            await Utility.setSharedPreference(
+                                'loginStatus', true);
 
-                          // Get the current user's ID from Firebase
-                          String userId =
-                              FirebaseAuth.instance.currentUser!.uid;
+                            // Get the current user's ID from Firebase
+                            String userId =
+                                FirebaseAuth.instance.currentUser!.uid;
 
-                          // Fetch user role from Firestore
-                          String? userRole =
-                              await Utility.fetchUserRoleFromFirestore(userId);
+                            // Fetch user role and status from Firestore
+                            Map<String, dynamic>? userData =
+                                await Utility.checkSharedPreferenceRoleUser(
+                                    userId);
 
-                          // Determine the route based on the user role
-                          if (userRole == 'ผู้ป่วย') {
-                            Navigator.pushReplacementNamed(
-                                context, AppRouter.dashboard);
-                          } else if (userRole == 'หมอ') {
-                            Navigator.pushReplacementNamed(
-                                context, AppRouter.doctor);
+                            if (userData != null) {
+                              String userRole = userData['Role'] ??
+                                  ''; // Replace 'Role' with the actual field name in Firestore
+                              bool statusIsTrue = userData['status'] ??
+                                  false; // Replace 'status' with the actual field name in Firestore
+
+                              // Determine the route based on the user role and status
+                              if (userRole == 'หมอ' && statusIsTrue == true) {
+                                Navigator.pushReplacementNamed(
+                                    context, AppRouter.doctor);
+                              } else {
+                                // Handle other cases or defaults
+                                Navigator.pushNamed(
+                                    context, AppRouter.doctorVerifyScreen);
+                              }
+                            } else {
+                              // Handle the case when user data cannot be fetched from Firestore
+                              print('Error fetching user data from Firestore');
+                              // You might want to show an error message to the user
+                            }
                           } else {
-                            // Handle other roles or defaults
-                            Navigator.pushReplacementNamed(
-                                context, AppRouter.dashboard);
+                            // Authentication failed, show a SnackBar
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(
+                                content: Text('Invalid email or password'),
+                                duration: Duration(seconds: 3),
+                              ),
+                            );
+                          }
+                        } on FirebaseAuthException catch (e) {
+                          // Handle specific FirebaseAuth exceptions
+                          if (e.code == 'user-not-found') {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(
+                                content: Text('User not found'),
+                                duration: Duration(seconds: 3),
+                              ),
+                            );
+                          } else if (e.code == 'wrong-password') {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(
+                                content: Text('Incorrect password'),
+                                duration: Duration(seconds: 3),
+                              ),
+                            );
+                          } else {
+                            // Handle other FirebaseAuth exceptions if needed
+                            print('Firebase Authentication error: ${e.code}');
                           }
                         } catch (e) {
-                          // Handle authentication errors
-                          print('Authentication error: $e');
-                          // You might want to show an error message to the user
+                          // Handle other errors if needed
+                          print('Error during authentication: $e');
                         }
                       }
                     },

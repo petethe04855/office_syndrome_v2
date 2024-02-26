@@ -1,5 +1,6 @@
 // ignore_for_file: prefer_const_constructors
 
+import 'package:office_syndrome_v2/screens/check_status_dr/doctor_verify_screen.dart';
 import 'package:office_syndrome_v2/screens/doctor/doctor_screen.dart';
 import 'package:office_syndrome_v2/screens/regions/region_screen.dart';
 import 'package:office_syndrome_v2/screens/users/dashboard/dashboard_screen.dart';
@@ -18,6 +19,7 @@ class AppRouter {
   // static const String editProfile = 'editProfile';
   static const String region = 'region';
   static const String doctor = 'doctor';
+  static const String doctorVerifyScreen = 'doctorVerifyScreen';
 
   // Router Map
   static get routes => {
@@ -29,5 +31,6 @@ class AppRouter {
         // editProfile: (context) => EditProfileScreen(),
         region: (context) => RegionScreen(),
         doctor: (context) => DoctorScreen(),
+        doctorVerifyScreen: (context) => DoctorVerifyScreen(),
       };
 }
