@@ -3,6 +3,7 @@
 import 'package:office_syndrome_v2/screens/check_status_dr/doctor_verify_screen.dart';
 import 'package:office_syndrome_v2/screens/doctor/doctor_screen.dart';
 import 'package:office_syndrome_v2/screens/regions/region_screen.dart';
+import 'package:office_syndrome_v2/screens/register/map/choose_map_screen.dart';
 import 'package:office_syndrome_v2/screens/users/dashboard/dashboard_screen.dart';
 import 'package:office_syndrome_v2/screens/login/login_screen.dart';
 import 'package:office_syndrome_v2/screens/products/components/product_item.dart';
@@ -20,6 +21,7 @@ class AppRouter {
   static const String region = 'region';
   static const String doctor = 'doctor';
   static const String doctorVerifyScreen = 'doctorVerifyScreen';
+  static const String chooseMapScreen = 'chooseMapScreen';
 
   // Router Map
   static get routes => {
@@ -32,5 +34,6 @@ class AppRouter {
         region: (context) => RegionScreen(),
         doctor: (context) => DoctorScreen(),
         doctorVerifyScreen: (context) => DoctorVerifyScreen(),
+        chooseMapScreen: (context) => ChooseMapScreen(),
       };
 }

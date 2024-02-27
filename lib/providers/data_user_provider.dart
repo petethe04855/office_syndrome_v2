@@ -10,14 +10,14 @@ class DataUserProvider with ChangeNotifier {
 
   Function()? onDataUpdated = () {
     print('User data has been updated!');
-  }; // Callback function
+  };
 
   void updateUserData(String firstName, String lastName, File? imageFile) {
-    // Call FirebaseAuthService to update data
+    // _userService.updateUser ส่งค่าไปให้ updateUser ใน FirebaseAuthService
     _userService.updateUser(firstName, lastName, imageFile);
-    // Update internal user and notify listeners
+    // เก็บค่า _userService.updateUser ไว้ใน userData
     userData = _userService.updateUser(firstName, lastName, imageFile);
-    // Update user based on response
+
     notifyListeners();
   }
 }

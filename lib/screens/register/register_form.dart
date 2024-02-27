@@ -168,8 +168,10 @@ class _RegisterFormState extends State<RegisterForm> {
                           _imageFile,
                         );
                         // FirebaseAuthService().upLoadImage(_imageFile);
-                        Navigator.pushReplacementNamed(
-                            context, AppRouter.login);
+                        if (_selectedPosition == "ผู้ป่วย") {
+                          Navigator.pushReplacementNamed(
+                              context, AppRouter.login);
+                        } else if (_selectedPosition == "หมอ") {}
                       }
                       print("Register_selectedPosition ${_selectedPosition}");
                     },
