@@ -5,6 +5,8 @@ import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:lottie/lottie.dart';
 import 'package:geocoding/geocoding.dart';
+import 'package:office_syndrome_v2/components/custom_textfield.dart';
+import 'package:office_syndrome_v2/themes/colors.dart';
 
 class ChooseMapScreen extends StatefulWidget {
   const ChooseMapScreen({super.key});
@@ -21,6 +23,11 @@ class _ChooseMapScreenState extends State<ChooseMapScreen> {
   late LatLng _defaultLatLng;
   late LatLng _draggedLatlng;
   String _draggedAddress = "";
+
+  final _addressController = TextEditingController();
+  final _localityController = TextEditingController();
+  final _administrativeAreaController = TextEditingController();
+  final _countryController = TextEditingController();
 
   @override
   void initState() {
@@ -49,6 +56,19 @@ class _ChooseMapScreenState extends State<ChooseMapScreen> {
           _gotoUserCurrentPosition();
         },
         child: Icon(Icons.location_on),
+      ),
+      bottomNavigationBar: BottomAppBar(
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+          children: [
+            IconButton(
+              icon: Icon(Icons.menu),
+              onPressed: () {
+                _showBottomSheet();
+              },
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -109,20 +129,100 @@ class _ChooseMapScreenState extends State<ChooseMapScreen> {
     return Center(
       child: Container(
         width: 100,
-        child: Lottie.asset("assets/gif/pin.json"),
+        child: Icon(Icons.location_on),
       ),
     );
   }
+
+  void _showBottomSheet() {
+    showModalBottomSheet(
+      context: context,
+      builder: (BuildContext context) {
+        return Container(
+          padding: EdgeInsets.all(16),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              ListTile(
+                leading: Icon(Icons.add_location),
+                title: Text('Add Location to Firestore'),
+                onTap: () {
+                  Navigator.pop(context); // Close the bottom sheet
+                  openDialog();
+                  _addCurrentAddress();
+                },
+              ),
+              // Add more options as needed
+            ],
+          ),
+        );
+      },
+    );
+  }
+
+  void _addCurrentAddress() {
+    // Handle the logic to save or use the current address as needed.
+    print('Current Address: ${_draggedAddress}');
+
+    // Add your logic here, e.g., save to storage or use the address in some way.
+  }
+
+  Future openDialog() => showDialog(
+        context: context,
+        builder: (context) => AlertDialog(
+          title: const Text("ที่อยู่"),
+          content: Container(
+            height: 300,
+            width: 300,
+            child: Column(
+              children: [
+                customTextField(
+                  controller: _addressController,
+                  hintText: "ที่อยู่",
+                  prefixIcon: Icon(Icons.home),
+                  obscureText: false,
+                  validator: (p0) {},
+                ),
+                customTextField(
+                  controller: _localityController,
+                  hintText: "ที่อยู่",
+                  prefixIcon: Icon(Icons.home),
+                  obscureText: false,
+                  validator: (p0) {},
+                ),
+                customTextField(
+                  controller: _administrativeAreaController,
+                  hintText: "ที่อยู่",
+                  prefixIcon: Icon(Icons.home),
+                  obscureText: false,
+                  validator: (p0) {},
+                ),
+                customTextField(
+                  controller: _countryController,
+                  hintText: "ที่อยู่",
+                  prefixIcon: Icon(Icons.home),
+                  obscureText: false,
+                  validator: (p0) {},
+                ),
+              ],
+            ),
+          ),
+        ),
+      );
 
   Future _getAddress(LatLng position) async {
     List<Placemark> placemarks =
         await placemarkFromCoordinates(position.latitude, position.longitude);
     Placemark address = placemarks[0];
     String addresStr =
-        "${address.street}, ${address.locality} , ${address.administrativeArea}, ${address.country}";
+        "${address.street}, ตำบล ${address.subLocality}, อำเภอ ${address.locality}, ${address.administrativeArea} ${address.postalCode}, ${address.country}";
 
     setState(() {
       _draggedAddress = addresStr;
+      _addressController.text = address.street!;
+      _localityController.text = address.locality!;
+      _administrativeAreaController.text = address.administrativeArea!;
+      _countryController.text = address.country!;
     });
   }
 
@@ -151,8 +251,11 @@ class _ChooseMapScreenState extends State<ChooseMapScreen> {
 
     // ตรวจสอบว่าผู้ใช้ปฏิเสธตำแหน่งแล้วลองขออนุญาตอีกครั้ง
 
-    if (locationPermission == LocationPermission.deniedForever) {
-      print("user denied permission forever");
+    if (locationPermission == LocationPermission.denied) {
+      locationPermission = await Geolocator.requestPermission();
+      if (locationPermission == LocationPermission.denied) {
+        print("user denied permission forever");
+      }
     }
 
     return await Geolocator.getCurrentPosition(
