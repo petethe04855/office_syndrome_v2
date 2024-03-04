@@ -38,13 +38,25 @@ void main() async {
   if (Utility.getSharedPreference('loginStatus') == true) {
     // Fetch user role from Firestore
     if (_authUser.currentUser != null) {
-      var userRole = await Utility.checkSharedPreferenceRoleUser(
-          _authUser.currentUser!.uid);
+      Map<String, dynamic>? userData =
+          await Utility.checkSharedPreferenceRoleUser(
+        _authUser.currentUser!.uid,
+      );
+
+      String userRole = userData!['Role'] ??
+          ''; // Replace 'Role' with the actual field name in Firestore
+      bool statusIsTrue = userData!['status'] ?? false;
       if (userRole == 'ผู้ป่วย') {
+        print("userRole ${userRole}");
         initialRoute = AppRouter.dashboard;
-      } else if (userRole == 'หมอ') {
-        initialRoute = AppRouter.doctorVerifyScreen;
+      } else if (userRole == 'หมอ' && statusIsTrue == true) {
+        print("userRole ${userRole}");
+        initialRoute = AppRouter.doctor; // ถ้า status เป็น true
+      } else if (userRole == 'หมอ' && statusIsTrue == false) {
+        print("userRole ${userRole}");
+        initialRoute = AppRouter.doctorVerifyScreen; // ถ้า status เป็น true
       } else {
+        print("userRole ไม่เข้าเงื่อนไข");
         initialRoute = AppRouter.dashboard;
       }
     } else {

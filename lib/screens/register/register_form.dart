@@ -171,7 +171,10 @@ class _RegisterFormState extends State<RegisterForm> {
                         if (_selectedPosition == "ผู้ป่วย") {
                           Navigator.pushReplacementNamed(
                               context, AppRouter.login);
-                        } else if (_selectedPosition == "หมอ") {}
+                        } else if (_selectedPosition == "หมอ") {
+                          Navigator.pushReplacementNamed(
+                              context, AppRouter.chooseMapScreen);
+                        }
                       }
                       print("Register_selectedPosition ${_selectedPosition}");
                     },

@@ -1,12 +1,17 @@
 import 'dart:async';
+import 'dart:io';
 
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
-import 'package:lottie/lottie.dart';
 import 'package:geocoding/geocoding.dart';
+import 'package:office_syndrome_v2/app_router.dart';
 import 'package:office_syndrome_v2/components/custom_textfield.dart';
-import 'package:office_syndrome_v2/themes/colors.dart';
+import 'package:office_syndrome_v2/components/rounded_button.dart';
+import 'package:office_syndrome_v2/models/region_model.dart';
+import 'package:office_syndrome_v2/screens/register/components/register_image.dart';
+import 'package:office_syndrome_v2/services/region_service.dart';
 
 class ChooseMapScreen extends StatefulWidget {
   const ChooseMapScreen({super.key});
@@ -16,6 +21,10 @@ class ChooseMapScreen extends StatefulWidget {
 }
 
 class _ChooseMapScreenState extends State<ChooseMapScreen> {
+  RegionService _regionService = RegionService();
+
+  final FirebaseAuth _authUser = FirebaseAuth.instance;
+
   // ดึงค่า map controller มาใช้
   Completer<GoogleMapController> _googleMapController =
       Completer<GoogleMapController>();
@@ -25,12 +34,44 @@ class _ChooseMapScreenState extends State<ChooseMapScreen> {
   String _draggedAddress = "";
 
   final _addressController = TextEditingController();
+  final _phoneController = TextEditingController();
+  final _nameController = TextEditingController();
   final _localityController = TextEditingController();
   final _administrativeAreaController = TextEditingController();
   final _countryController = TextEditingController();
 
+  // countText ตัวแปรเก็บค่า TextEditingController ของ อำเภอ จังหวัด และ รหัสไปรษณีย์
+  var countText;
+
+  final _chooseMap = GlobalKey<FormState>();
+
+  List<Region> _regions = [];
+
+  String _selectedRegion = "";
+
+  File? _imageFile;
+
+  String? _imageName;
+
+  String selectedRegionId = "";
+
+  String selectedRegionName = "";
+
+  Future<void> _fetchRegion() async {
+    try {
+      List<Region> regions = await _regionService.getRegionsId();
+
+      setState(() {
+        _regions = regions;
+      });
+    } catch (e) {
+      print("Error fetching data: $e");
+    }
+  }
+
   @override
   void initState() {
+    _fetchRegion();
     _init();
     super.initState();
   }
@@ -114,6 +155,7 @@ class _ChooseMapScreenState extends State<ChooseMapScreen> {
         // ฟังก์ชั่นนี้จะเริ่มทำงานเมื่อผู้ใช้ลากบนแผนที่
         // every time user drag this will get value
         _draggedLatlng = cameraPosition.target;
+        print("_draggedLatlng ${_draggedLatlng}");
       },
       onMapCreated: (GoogleMapController controller) {
         // ฟังก์ชั่นนี้จะเริ่มทำงานเมื่อโหลดแผนที่จนเต็ม
@@ -125,6 +167,7 @@ class _ChooseMapScreenState extends State<ChooseMapScreen> {
     );
   }
 
+  // Pin icon ที่แสดงกลางแผนที่
   Widget _getCustomPin() {
     return Center(
       child: Container(
@@ -149,7 +192,7 @@ class _ChooseMapScreenState extends State<ChooseMapScreen> {
                 onTap: () {
                   Navigator.pop(context); // Close the bottom sheet
                   openDialog();
-                  _addCurrentAddress();
+                  _addCurrentAddress(_draggedLatlng);
                 },
               ),
               // Add more options as needed
@@ -160,11 +203,53 @@ class _ChooseMapScreenState extends State<ChooseMapScreen> {
     );
   }
 
-  void _addCurrentAddress() {
+  void _addCurrentAddress(LatLng position) {
     // Handle the logic to save or use the current address as needed.
+
     print('Current Address: ${_draggedAddress}');
 
     // Add your logic here, e.g., save to storage or use the address in some way.
+  }
+
+  Widget customDropdown() {
+    print("_authUser ${_authUser.currentUser!.uid}");
+    List<String> _nameRegion =
+        _regions.map((region) => region.regionName).toList();
+
+    return DropdownButtonFormField<String>(
+      hint: Text(_nameRegion.first),
+      decoration: InputDecoration(
+        border: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(40),
+        ),
+        focusedBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(40),
+        ),
+        hintStyle: const TextStyle(color: Colors.grey),
+        filled: true,
+        isDense: true,
+      ),
+      items: _regions.map((region) {
+        return DropdownMenuItem<String>(
+          key: Key(region.regionId),
+          child: Text(region.regionName),
+          value: region.regionId,
+        );
+      }).toList(),
+      onChanged: (value) async {
+        // ทำอะไรกับค่าที่ถูกเลือก
+        setState(() {
+          _selectedRegion = value.toString();
+          selectedRegionId = value.toString(); // Set selectedRegionId
+          selectedRegionName = _regions
+              .firstWhere((region) => region.regionId == value)
+              .regionName; // Set selectedRegionName
+
+          print('Selected regionId: $selectedRegionId');
+          print('Selected regionName: $selectedRegionName');
+        });
+      },
+    );
   }
 
   Future openDialog() => showDialog(
@@ -172,39 +257,93 @@ class _ChooseMapScreenState extends State<ChooseMapScreen> {
         builder: (context) => AlertDialog(
           title: const Text("ที่อยู่"),
           content: Container(
-            height: 300,
+            height: 550,
             width: 300,
-            child: Column(
-              children: [
-                customTextField(
-                  controller: _addressController,
-                  hintText: "ที่อยู่",
-                  prefixIcon: Icon(Icons.home),
-                  obscureText: false,
-                  validator: (p0) {},
+            child: SingleChildScrollView(
+              child: Form(
+                key: _chooseMap,
+                child: Column(
+                  children: [
+                    RegisterImage(
+                      image: _imageName,
+                      (file) {
+                        setState(() {
+                          _imageFile = file;
+                        });
+                      },
+                    ),
+                    customDropdown(),
+                    customTextField(
+                      controller: _nameController,
+                      hintText: "ชื่อ",
+                      prefixIcon: Icon(Icons.home),
+                      obscureText: false,
+                      validator: (p0) {},
+                    ),
+                    customTextField(
+                      controller: _phoneController,
+                      hintText: "เบอร์โทรศัพท์",
+                      prefixIcon: Icon(Icons.phone_android),
+                      obscureText: false,
+                      validator: (p0) {},
+                    ),
+                    customTextField(
+                      controller: _addressController,
+                      hintText: "ที่อยู่",
+                      prefixIcon: Icon(Icons.home),
+                      obscureText: false,
+                      validator: (p0) {},
+                    ),
+                    customTextField(
+                      controller: _localityController,
+                      hintText: "ที่อยู่",
+                      prefixIcon: Icon(Icons.home),
+                      obscureText: false,
+                      validator: (p0) {},
+                    ),
+                    customTextField(
+                      controller: _administrativeAreaController,
+                      hintText: "ที่อยู่",
+                      prefixIcon: Icon(Icons.home),
+                      obscureText: false,
+                      validator: (p0) {},
+                    ),
+                    customTextField(
+                      controller: _countryController,
+                      hintText: "ที่อยู่",
+                      prefixIcon: Icon(Icons.home),
+                      obscureText: false,
+                      validator: (p0) {},
+                    ),
+                    RoundedButton(
+                      label: 'label',
+                      onPressed: () async {
+                        countText = "${_addressController.text}"
+                            " ${_localityController.text}"
+                            "${_administrativeAreaController.text}"
+                            "${_countryController.text}";
+                        _regionService.addToRegionLocation(
+                          _authUser.currentUser!.uid,
+                          selectedRegionId,
+                          selectedRegionName,
+                          _nameController.text,
+                          _phoneController.text,
+                          countText,
+                          _draggedLatlng,
+                          _imageFile,
+                        );
+                        print("countText ${countText}");
+                        print("RoundedButton_draggedAddress ${_draggedLatlng}");
+                        print("selectedRegionName ${selectedRegionName}");
+                        print("selectedRegionId ${selectedRegionId}");
+                        Navigator.pushNamed(
+                            context, AppRouter.doctorVerifyScreen);
+                      },
+                      icon: null,
+                    )
+                  ],
                 ),
-                customTextField(
-                  controller: _localityController,
-                  hintText: "ที่อยู่",
-                  prefixIcon: Icon(Icons.home),
-                  obscureText: false,
-                  validator: (p0) {},
-                ),
-                customTextField(
-                  controller: _administrativeAreaController,
-                  hintText: "ที่อยู่",
-                  prefixIcon: Icon(Icons.home),
-                  obscureText: false,
-                  validator: (p0) {},
-                ),
-                customTextField(
-                  controller: _countryController,
-                  hintText: "ที่อยู่",
-                  prefixIcon: Icon(Icons.home),
-                  obscureText: false,
-                  validator: (p0) {},
-                ),
-              ],
+              ),
             ),
           ),
         ),
@@ -219,6 +358,7 @@ class _ChooseMapScreenState extends State<ChooseMapScreen> {
 
     setState(() {
       _draggedAddress = addresStr;
+
       _addressController.text = address.street!;
       _localityController.text = address.locality!;
       _administrativeAreaController.text = address.administrativeArea!;
