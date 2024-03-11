@@ -9,7 +9,7 @@ class GetDataProvider with ChangeNotifier {
   Map<String, dynamic>? provideGetData;
   Function()? onDataUpdated = () {
     print('User data has been updated!');
-  }; // Callback function
+  };
 
   Future<void> fetchUserData() async {
     try {
@@ -22,7 +22,6 @@ class GetDataProvider with ChangeNotifier {
         provideGetData = userSnapshot.data() as Map<String, dynamic>;
         notifyListeners();
 
-        // Call the callback function to inform listeners
         if (onDataUpdated != null) {
           onDataUpdated!();
         }

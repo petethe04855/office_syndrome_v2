@@ -45,15 +45,15 @@ void main() async {
 
       String userRole = userData!['Role'] ??
           ''; // Replace 'Role' with the actual field name in Firestore
-      bool statusIsTrue = userData!['status'] ?? false;
+      bool statusIsTrue = userData['status'] ?? false;
       if (userRole == 'ผู้ป่วย') {
         print("userRole ${userRole}");
         initialRoute = AppRouter.dashboard;
       } else if (userRole == 'หมอ' && statusIsTrue == true) {
-        print("userRole ${userRole}");
+        print("userRole ${userRole} ${statusIsTrue}");
         initialRoute = AppRouter.doctor; // ถ้า status เป็น true
       } else if (userRole == 'หมอ' && statusIsTrue == false) {
-        print("userRole ${userRole}");
+        print("userRole ${userRole} ${statusIsTrue}");
         initialRoute = AppRouter.doctorVerifyScreen; // ถ้า status เป็น true
       } else {
         print("userRole ไม่เข้าเงื่อนไข");

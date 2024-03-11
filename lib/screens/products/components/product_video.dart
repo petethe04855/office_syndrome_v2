@@ -26,8 +26,6 @@ class _ProductVideoState extends State<ProductVideo> {
     _initializeVideoPlayer();
   }
 
-  // การเพิ่ม Listener สำหรับ _videoPlayerController เพื่อตรวจสอบว่าวิดีโอเล่นจบหรือไม่
-  // ถ้าจบแล้วจะตั้งค่า _isPlaying เป็น false และเรียก setState เพื่อทำให้ UI ทำการ rebuild และปรับเปลี่ยนสถานะ.
   void _initializeVideoPlayer() {
     _videoPlayerController = VideoPlayerController.network(
       widget.productCategory.videoUrl,

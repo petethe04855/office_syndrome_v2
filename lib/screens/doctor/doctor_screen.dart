@@ -2,6 +2,9 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:office_syndrome_v2/app_router.dart';
+import 'package:office_syndrome_v2/models/product_category_model.dart';
+import 'package:office_syndrome_v2/screens/doctor/upload/components/upload_image.dart';
+import 'package:office_syndrome_v2/screens/doctor/upload/upload_add.dart';
 import 'package:office_syndrome_v2/utils/utility.dart';
 
 class DoctorScreen extends StatefulWidget {
@@ -38,10 +41,8 @@ class _DoctorScreenState extends State<DoctorScreen> {
 
   Future<void> fetchData() async {
     QuerySnapshot querySnapshot = await FirebaseFirestore.instance
-        .collection('ProductCategory') // เปลี่ยนเป็นชื่อคอลเล็กชันของคุณ
-        .where('uidUpLoadvideo',
-            isEqualTo: _authUser.currentUser!
-                .uid) // เปลี่ยน 'user_uid' เป็น UID ของผู้ใช้ที่ต้องการดึงข้อมูล
+        .collection('ProductCategory')
+        .where('uidUpLoad', isEqualTo: _authUser.currentUser!.uid)
         .get();
 
     setState(() {
@@ -49,11 +50,30 @@ class _DoctorScreenState extends State<DoctorScreen> {
     });
   }
 
+  bool _isGridView = true;
+
+  // สร้างตัวแปร refreshKey สำหรับ RefreshIndicator
+  var refreshKey = GlobalKey<RefreshIndicatorState>();
+
+  // สร้างฟังก์ชันสลับระหว่าง ListView และ GridView
+  void _toggleView() {
+    setState(() {
+      _isGridView = !_isGridView;
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Doctor'),
+        title: const Text('Doctor'),
+        actions: [
+          IconButton(
+            onPressed: _toggleView,
+            icon: Icon(_isGridView ? Icons.list_outlined : Icons.grid_view,
+                color: Colors.white),
+          )
+        ],
       ),
       drawer: Drawer(
         child: Column(
@@ -72,39 +92,75 @@ class _DoctorScreenState extends State<DoctorScreen> {
           ],
         ),
       ),
-      body: Column(
-        children: [
-          Container(
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceAround,
-              children: [
-                ElevatedButton(
-                  onPressed: () {},
-                  child: Text("data"),
-                ),
-                ElevatedButton(
-                  onPressed: () {},
-                  child: Text("data"),
-                ),
-              ],
+      body: RefreshIndicator(
+        key: refreshKey,
+        onRefresh: () async {
+          setState(() {});
+        },
+        child: Column(
+          children: [
+            Container(
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceAround,
+                children: [
+                  ElevatedButton(
+                    onPressed: () {},
+                    child: Text("data"),
+                  ),
+                  ElevatedButton(
+                    onPressed: () {
+                      Navigator.of(context).push(
+                        MaterialPageRoute(
+                          builder: (context) => const UploadAdd(),
+                        ),
+                      );
+                    },
+                    child: Text("data"),
+                  ),
+                ],
+              ),
             ),
-          ),
-          Expanded(
-            child: Container(
-              color: Colors.amber,
+            Expanded(
               child: ListView.builder(
                 itemCount: documents.length,
                 itemBuilder: (context, index) {
-                  return ListTile(
-                    title: Text(documents[index][
-                        'uidUpLoadvideo']), // เปลี่ยน 'field_name' เป็นชื่อของฟิลด์ที่คุณต้องการแสดง
-                  );
+                  return ListTile(title: Text(documents[index]['uidUpLoad']));
                 },
               ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
+    );
+  }
+
+  // _gridView Widget -----------------------------------------------------------
+  Widget _gridView(List<ProductCategory> upLoad) {
+    return GridView.builder(
+        gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+          crossAxisCount: 2, // จำนวนคอลัมน์
+          crossAxisSpacing: 0,
+          mainAxisSpacing: 0,
+          mainAxisExtent: 200,
+        ),
+        itemCount: upLoad.length,
+        itemBuilder: (context, index) {
+          return Padding(padding: const EdgeInsets.all(8.0), child: ListTile());
+        });
+  }
+  // ---------------------------------------------------------------------------
+
+  Widget _listView(List<ProductCategory> upLoad) {
+    return ListView.builder(
+      itemCount: upLoad.length,
+      itemBuilder: (context, index) {
+        return Padding(
+          padding: const EdgeInsets.only(top: 8.0, left: 8.0, right: 8.0),
+          child: SizedBox(
+            height: 350,
+          ),
+        );
+      },
     );
   }
 }

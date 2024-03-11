@@ -1,9 +1,12 @@
 // ignore_for_file: prefer_const_constructors
 
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:office_syndrome_v2/app_router.dart';
 import 'package:office_syndrome_v2/providers/getdata_provider.dart';
 import 'package:office_syndrome_v2/screens/users/editprofile/edit_profile_screen.dart';
 import 'package:office_syndrome_v2/themes/colors.dart';
+import 'package:office_syndrome_v2/utils/utility.dart';
 import 'package:provider/provider.dart';
 
 class ProfileScreen extends StatefulWidget {
@@ -15,6 +18,20 @@ class ProfileScreen extends StatefulWidget {
 
 class _ProfileScreenState extends State<ProfileScreen> {
   Map<String, dynamic>? userData;
+
+  void signOut() {
+    FirebaseAuth.instance.signOut();
+    // Remove token, loginStatus shared preference
+    Utility.removeSharedPreference('token');
+    Utility.removeSharedPreference('loginStatus');
+
+    // Clear all route and push to login screen
+    Navigator.pushNamedAndRemoveUntil(
+      context,
+      AppRouter.login,
+      (route) => false,
+    );
+  }
 
   @override
   void initState() {
@@ -43,7 +60,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
     );
   }
 
-  // สร้าง widget สำหรับแสดงข้อมูล profile ที่อ่านมาจาก shared preference
+  // สร้าง widget สำหรับแสดงข้อมูล profile
   Widget _buildHeader(userData) {
     final getDataProvider = Provider.of<GetDataProvider>(context);
 
@@ -89,6 +106,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
     );
   }
 
+  // Widget สำหรับแสดงเมนูต่างๆ
   Widget _buildListMenu(userData) {
     return Column(
       children: [
@@ -125,6 +143,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
             size: 16,
           ),
         ),
+
+        // ปุ่มออกจากระบบ
         ListTile(
           leading: const Icon(Icons.exit_to_app),
           title: Text("menu_logout"),
@@ -132,7 +152,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
             Icons.arrow_forward_ios,
             size: 16,
           ),
-          onTap: () {},
+          onTap: () {
+            signOut();
+          },
         ),
       ],
     );

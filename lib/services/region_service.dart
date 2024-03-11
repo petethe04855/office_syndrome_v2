@@ -48,6 +48,8 @@ class RegionService {
     return productsCategory;
   }
 
+  // เพิ่มข้อมูล เข้าใน regionLocation
+
   Future<void> addToRegionLocation(
     currentUser,
     String regionId,
@@ -98,6 +100,8 @@ class RegionService {
       print('Error sending data to Firestore: $e');
     }
   }
+
+  // ดึงข้อมูลจาก region id
 
   Future<List<Region>> getRegionsId() async {
     QuerySnapshot regionSnapshot = await _firestore.collection('region').get();

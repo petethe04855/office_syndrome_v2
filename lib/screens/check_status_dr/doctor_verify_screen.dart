@@ -35,7 +35,7 @@ class _DoctorVerifyScreenState extends State<DoctorVerifyScreen> {
         await Utility.checkSharedPreferenceRoleUser(userId);
 
     if (userData != null && userData['status'] == true) {
-      // ถ้า status เป็น true แสดง Dialog และนำผู้ใช้ไปยังหน้าที่คุณต้องการ
+      // ถ้า status เป็น true แสดง Dialog
       showDialog(
         context: context,
         builder: (BuildContext context) {
@@ -45,8 +45,7 @@ class _DoctorVerifyScreenState extends State<DoctorVerifyScreen> {
             actions: [
               TextButton(
                 onPressed: () {
-                  Navigator.of(context).pop(); // ปิด AlertDialog
-                  // นำผู้ใช้ไปยังหน้าที่คุณต้องการ
+                  Navigator.of(context).pop();
                   Navigator.pushReplacementNamed(context, AppRouter.doctor);
                 },
                 child: const Text('ตกลง'),
@@ -57,7 +56,6 @@ class _DoctorVerifyScreenState extends State<DoctorVerifyScreen> {
       );
     } else {
       // กรณีที่ status เป็น false หรือไม่มีข้อมูล
-      // ทำอย่างอื่นตามต้องการ
       print('ไม่สามารถอนุมัติได้');
     }
   }
@@ -83,9 +81,9 @@ class _DoctorVerifyScreenState extends State<DoctorVerifyScreen> {
               onPressed: () {
                 // ตรวจสอบค่า statusIsTrue
                 // if (statusIsTrue) {
-                //   approveAndNavigate(); // แสดง Dialog และนำผู้ใช้ไปยังหน้าที่คุณต้องการ
+                //   approveAndNavigate();
                 // } else {
-                //   // กรณีที่ statusIsTrue เป็น false สามารถทำอย่างอื่นตามต้องการได้
+
                 // }
               },
               child: const Text('อนุมัติ'),

@@ -52,26 +52,31 @@ class _ProductFormState extends State<ProductForm> {
         itemCount: _productsCategory.length,
         itemBuilder: (context, index) {
           ProductCategory product = _productsCategory[index];
-          return Card(
-            child: ListTile(
-              leading: CircleAvatar(
-                backgroundImage: NetworkImage(product.categoryImage),
-              ),
-              title: Text(product.categoryName),
-              // Add other widgets or navigate to product_video as needed
-              trailing: Icon(Icons.chevron_right),
-              onTap: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => ProductVideo(
-                      productCategory: product,
+          if (product.isApprove) {
+            return Card(
+              child: ListTile(
+                leading: CircleAvatar(
+                  backgroundImage: NetworkImage(product.categoryImage),
+                ),
+                title: Text(product.categoryName),
+                // Add other widgets or navigate to product_video as needed
+                trailing: Icon(Icons.chevron_right),
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => ProductVideo(
+                        productCategory: product,
+                      ),
                     ),
-                  ),
-                );
-              },
-            ),
-          );
+                  );
+                },
+              ),
+            );
+          } else {
+            // ถ้า videoAvailable เป็น false ให้ return Container() หรือสิ่งที่ไม่แสดงผล
+            return Container();
+          }
         },
       ),
     );

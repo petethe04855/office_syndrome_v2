@@ -6,7 +6,7 @@ import 'package:flutter/material.dart';
 Widget customTextField({
   required TextEditingController controller,
   required String hintText,
-  required Icon prefixIcon,
+  required Icon? prefixIcon,
   required bool obscureText,
   TextInputType textInputType = TextInputType.text,
   required String? Function(String?)? validator,
@@ -66,12 +66,12 @@ Widget customTextFieldEdit({
 }
 
 Widget customTextFieldProduct({
+  required TextEditingController controller,
   required String hintText,
-  required Icon prefixIcon,
+  required Icon? prefixIcon,
   required bool obscureText,
   TextInputType textInputType = TextInputType.text,
   int maxLines = 1,
-  String initialValue = '',
   required String? Function(String?)? validator,
   required Function(String?)? onSaved,
 }) {
@@ -80,8 +80,8 @@ Widget customTextFieldProduct({
     maxLines: maxLines,
     autofocus: false,
     enableSuggestions: false,
-    initialValue: initialValue,
     autocorrect: false,
+    controller: controller,
     obscureText: obscureText,
     decoration: InputDecoration(
       hintText: hintText,

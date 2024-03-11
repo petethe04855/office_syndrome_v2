@@ -1,14 +1,12 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
-import 'package:image_picker/image_picker.dart';
 import 'package:office_syndrome_v2/components/custom_textfield.dart';
 import 'package:office_syndrome_v2/components/rounded_button.dart';
 import 'package:office_syndrome_v2/providers/data_user_provider.dart';
 import 'package:office_syndrome_v2/providers/getdata_provider.dart';
 
 import 'package:office_syndrome_v2/screens/users/editprofile/components/edit_profile_image.dart';
-import 'package:office_syndrome_v2/services/firbase_auth_services.dart';
 import 'package:provider/provider.dart';
 
 class EditProfileScreen extends StatefulWidget {

@@ -22,15 +22,12 @@ class _RegionScreenState extends State<RegionScreen> {
 
   Future<void> _getAllRegions() async {
     try {
-      // Attempt to get all products using the _productService
       List<LocationsModel> getAll = await _regionService.getProductsCategory();
 
-      // If successful, update the state with the received data
       setState(() {
         _regionsAll = getAll;
       });
     } catch (e) {
-      // If an error occurs during the fetch operation, print the error message
       print("Error fetching data: $e");
     }
   }
@@ -107,7 +104,6 @@ class _RegionScreenState extends State<RegionScreen> {
   }
 
   Widget _gridView() {
-    // Filter locations based on search query
     List<LocationsModel> filteredRegions = _regionsAll
         .where((location) =>
             location.locaName.toLowerCase().contains(_searchQuery))
@@ -138,13 +134,6 @@ class _RegionScreenState extends State<RegionScreen> {
       subtitle: Text(""),
       trailing: IconButton(
           onPressed: () {
-            // Navigator.push(
-            //     context,
-            //     MaterialPageRoute(
-            //       builder: (context) => ProductVideo(
-            //         productCategory: AllProduct,
-            //       ),
-            //     ));
             Navigator.push(
                 context,
                 MaterialPageRoute(

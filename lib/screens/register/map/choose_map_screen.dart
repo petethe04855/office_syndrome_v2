@@ -153,7 +153,6 @@ class _ChooseMapScreenState extends State<ChooseMapScreen> {
       },
       onCameraMove: (cameraPosition) {
         // ฟังก์ชั่นนี้จะเริ่มทำงานเมื่อผู้ใช้ลากบนแผนที่
-        // every time user drag this will get value
         _draggedLatlng = cameraPosition.target;
         print("_draggedLatlng ${_draggedLatlng}");
       },
@@ -237,7 +236,6 @@ class _ChooseMapScreenState extends State<ChooseMapScreen> {
         );
       }).toList(),
       onChanged: (value) async {
-        // ทำอะไรกับค่าที่ถูกเลือก
         setState(() {
           _selectedRegion = value.toString();
           selectedRegionId = value.toString(); // Set selectedRegionId
@@ -376,7 +374,7 @@ class _ChooseMapScreenState extends State<ChooseMapScreen> {
     GoogleMapController mapController = await _googleMapController.future;
     mapController.animateCamera(CameraUpdate.newCameraPosition(
         CameraPosition(target: position, zoom: 17.5)));
-    // every time that we dragged pin , it will list down the address here
+
     await _getAddress(position);
   }
 

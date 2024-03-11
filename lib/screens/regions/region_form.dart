@@ -29,7 +29,6 @@ class _RegionFormScreenState extends State<RegionFormScreen> {
 
   Future<void> _getAllRegions() async {
     try {
-      // Attempt to get all products using the _productService
       List<LocationsModel> getAll =
           await _locationsService.getProductsCategory();
 
@@ -37,7 +36,6 @@ class _RegionFormScreenState extends State<RegionFormScreen> {
           _locationsService.getFilteredRegion(widget.regionId, getAll);
       setState(() {});
     } catch (e) {
-      // If an error occurs during the fetch operation, print the error message
       print("Error fetching data: $e");
     }
   }

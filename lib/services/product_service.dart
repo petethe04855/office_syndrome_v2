@@ -1,4 +1,7 @@
+import 'dart:io';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:office_syndrome_v2/models/brand_category_model.dart';
 import 'package:office_syndrome_v2/models/product_category_model.dart';
 
@@ -17,10 +20,10 @@ class ProductService {
         categoryId: doc.id,
         categoryName: doc['categoryName'],
         categoryImage: doc['categoryImage'],
-        productId: doc['productId'],
         description: doc['description'],
         round: doc['round'],
         videoUrl: doc['video_url'],
+        isApprove: doc['isApprove'],
       ));
     });
 
@@ -39,10 +42,10 @@ class ProductService {
         categoryId: data['categoryId'],
         categoryName: data['categoryName'],
         categoryImage: data['categoryImage'],
-        productId: data['productId'],
         description: data['description'],
         round: data['round'],
         videoUrl: data['video_url'],
+        isApprove: data['isApprove'],
       );
     }).toList();
 
@@ -63,6 +66,85 @@ class ProductService {
     }).toList();
 
     return brands;
+  }
+
+  Future<void> addToProductCategory(
+    currentUser,
+    String categoryId,
+    String categoryName,
+    String name,
+    String description,
+    String round,
+    File? _imageFile,
+    File? _videoFile,
+  ) async {
+    try {
+      CollectionReference productCategory =
+          FirebaseFirestore.instance.collection('ProductCategory');
+
+      final imageUrl = await _uploadImage(currentUser, _imageFile);
+      final videoUrl = _videoFile != null
+          ? await _uploadVideo(currentUser, _videoFile)
+          : null;
+      print("_videoFile ${_videoFile}");
+
+      var locationDoc = await productCategory.doc(categoryId).get();
+
+      if (!locationDoc.exists) {
+        await productCategory.add({
+          'categoryId': categoryId,
+          'categoryImage': imageUrl,
+          'categoryName': name,
+          'description': description,
+          'round': round,
+          'video_url': videoUrl,
+          'uidUpLoad': currentUser,
+        });
+        print('add data to ProductCategory collection successfully');
+      } else {
+        print('data already exists in ProductCategorys collection');
+      }
+    } catch (e) {
+      print('Error sending data to Firestore: $e');
+    }
+  }
+
+  Future<String> _uploadImage(currentUser, File? _imageFile) async {
+    final imageFile = _imageFile;
+    final imageName = currentUser;
+    final imageRef =
+        FirebaseStorage.instance.ref().child('imagesVideo/$imageName.jpg');
+
+    await imageRef.putFile(imageFile!);
+
+    final imageUrl = await imageRef.getDownloadURL();
+
+    return imageUrl;
+  }
+
+  Future<String?> _uploadVideo(String currentUser, File? videoFile) async {
+    if (videoFile == null) {
+      return null; // Handle case where no video is selected
+    }
+
+    try {
+      // Create a reference to the video file in Firebase Storage
+      final storageRef = FirebaseStorage.instance
+          .ref()
+          .child('videos_test/${videoFile.path.split('/').last}');
+
+      // Upload the video file to Firebase Storage
+      final uploadTask = storageRef.putFile(videoFile);
+      await uploadTask.whenComplete(() {});
+
+      // Get the download URL of the uploaded video
+      final downloadUrl = await storageRef.getDownloadURL();
+
+      return downloadUrl;
+    } catch (e) {
+      print('Error uploading video: $e');
+      return null;
+    }
   }
 
   List<ProductCategory> getFilteredProducts(

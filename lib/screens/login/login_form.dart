@@ -161,18 +161,27 @@ class _LoginFormState extends State<LoginForm> {
                                   false; // Replace 'status' with the actual field name in Firestore
 
                               // Determine the route based on the user role and status
-                              if (userRole == 'หมอ' && statusIsTrue == true) {
+                              if (userRole == 'ผู้ป่วย') {
+                                print("userRole ${userRole}");
+                                Navigator.pushReplacementNamed(
+                                    context, AppRouter.dashboard);
+                              } else if (userRole == 'หมอ' &&
+                                  statusIsTrue == true) {
+                                print("userRole ${userRole}");
                                 Navigator.pushReplacementNamed(
                                     context, AppRouter.doctor);
-                              } else {
-                                // Handle other cases or defaults
+                                AppRouter.doctor; // ถ้า status เป็น true
+                              } else if (userRole == 'หมอ' &&
+                                  statusIsTrue == false) {
+                                print("userRole ${userRole}");
                                 Navigator.pushReplacementNamed(
                                     context, AppRouter.doctorVerifyScreen);
+                                // ถ้า status เป็น true
+                              } else {
+                                print("userRole ไม่เข้าเงื่อนไข");
+                                Navigator.pushReplacementNamed(
+                                    context, AppRouter.dashboard);
                               }
-                            } else {
-                              // Handle the case when user data cannot be fetched from Firestore
-                              print('Error fetching user data from Firestore');
-                              // You might want to show an error message to the user
                             }
                           } else {
                             // Authentication failed, show a SnackBar

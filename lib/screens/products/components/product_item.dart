@@ -38,15 +38,12 @@ class _ProductItemState extends State<ProductItem> {
 
   Future<void> _getAllProducts() async {
     try {
-      // Attempt to get all products using the _productService
       List<ProductCategory> getAll = await _productService.getAllProducts();
 
-      // If successful, update the state with the received data
       setState(() {
         _productsAllCategory = getAll;
       });
     } catch (e) {
-      // If an error occurs during the fetch operation, print the error message
       print("Error fetching data: $e");
     }
   }
@@ -102,7 +99,11 @@ class _ProductItemState extends State<ProductItem> {
       itemCount: filteredRegions.length,
       itemBuilder: (context, index) {
         ProductCategory AllProduct = filteredRegions[index];
-        return Card(child: _listItem(AllProduct));
+        if (AllProduct.isApprove) {
+          return Card(child: _listItem(AllProduct));
+        } else {
+          return const SizedBox();
+        }
       },
     );
   }
@@ -110,28 +111,31 @@ class _ProductItemState extends State<ProductItem> {
   Widget _gridView() {
     List<ProductCategory> filteredRegions = _productsAllCategory
         .where((location) =>
-            location.categoryName.toLowerCase().contains(_searchQuery))
+            location.categoryName.toLowerCase().contains(_searchQuery) &&
+            location.isApprove) // เพิ่มเงื่อนไขนี้
         .toList();
-    return GridView.builder(
-      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-        crossAxisCount: 2, // จำนวนคอลัมน์
-        crossAxisSpacing: 5,
-        mainAxisSpacing: 5,
-        mainAxisExtent: 200,
-      ),
-      itemCount: filteredRegions.length,
-      itemBuilder: (context, index) {
-        ProductCategory AllProduct = filteredRegions[index];
-        return Card(child: _listItem(AllProduct));
-      },
-    );
+    return filteredRegions.isEmpty
+        ? Container() // หากไม่มีข้อมูลที่ตรงตามเงื่อนไข
+        : GridView.builder(
+            gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+              crossAxisCount: 2, // จำนวนคอลัมน์
+              crossAxisSpacing: 5,
+              mainAxisSpacing: 5,
+              mainAxisExtent: 200,
+            ),
+            itemCount: filteredRegions.length,
+            itemBuilder: (context, index) {
+              ProductCategory allProduct = filteredRegions[index];
+              return Card(child: _listItem(allProduct));
+            },
+          );
   }
 
   // ListTile แสดงวิดีโอ
   Widget _listItem(ProductCategory AllProduct) {
     return ListTile(
       leading: CircleAvatar(
-        backgroundImage: AssetImage('assets/images/noavartar.png'),
+        backgroundImage: NetworkImage(AllProduct.categoryImage),
       ),
       title: Text(AllProduct.categoryName),
       subtitle: Text(""),
